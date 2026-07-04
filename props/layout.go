@@ -10,7 +10,6 @@ type PositionType = goda.PositionType
 type Display = goda.Display
 type Overflow = goda.Overflow
 type BoxSizing = goda.BoxSizing
-type Direction = goda.Direction
 
 var (
 	JustifyFlexStart    = goda.JustifyFlexStart
@@ -25,9 +24,6 @@ var (
 	AlignFlexEnd      = goda.AlignFlexEnd
 	AlignStretch      = goda.AlignStretch
 	AlignBaseline     = goda.AlignBaseline
-	AlignSpaceBetween = goda.AlignSpaceBetween
-	AlignSpaceAround  = goda.AlignSpaceAround
-	AlignSpaceEvenly  = goda.AlignSpaceEvenly
 
 	FlexDirectionRow            = goda.FlexDirectionRow
 	FlexDirectionColumn         = goda.FlexDirectionColumn
@@ -51,7 +47,4 @@ var (
 
 	BoxSizingBorderBox  = goda.BoxSizingBorderBox
 	BoxSizingContentBox = goda.BoxSizingContentBox
-
-	DirectionLTR = goda.DirectionLTR
-	DirectionRTL = goda.DirectionRTL
 )
