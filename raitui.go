@@ -30,6 +30,10 @@ var (
 	Input       = component.Input
 	TextArea    = component.TextArea
 	Badge       = component.Badge
+	BadgeSolid  = component.BadgeSolid
+	BadgeSubtle = component.BadgeSubtle
+	BadgeOutline = component.BadgeOutline
+	BadgeVariant = component.BadgeVariant
 	Card        = component.Card
 	Alert       = component.Alert
 	Spinner     = component.Spinner
