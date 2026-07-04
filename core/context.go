@@ -384,6 +384,12 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 		renderInput(rctx, elem)
 	case TypeButton:
 		renderButton(rctx, elem)
+	case TypeSpinner:
+		renderSpinner(rctx, elem)
+	case TypeProgress:
+		renderProgress(rctx, elem)
+	case TypeAvatar:
+		renderAvatar(rctx, elem)
 	}
 
 	if ctx.Debug && w > 0 && h > 0 {
@@ -420,6 +426,12 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 			label = "In"
 		case TypeButton:
 			label = "Bt"
+		case TypeSpinner:
+			label = "Sp"
+		case TypeProgress:
+			label = "Pr"
+		case TypeAvatar:
+			label = "Av"
 		}
 		txt := fmt.Sprintf("%s %.0fx%.0f", label, w, h)
 		text.Draw(screen, txt, ctx.fontSm, int(x+2), int(y+10), clr)

@@ -29,6 +29,12 @@ var (
 	Switch      = component.Switch
 	Input       = component.Input
 	TextArea    = component.TextArea
+	Badge       = component.Badge
+	Card        = component.Card
+	Alert       = component.Alert
+	Spinner     = component.Spinner
+	Avatar      = component.Avatar
+	Progress    = component.Progress
 
 	Colors = theme.Colors
 

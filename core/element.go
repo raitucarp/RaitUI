@@ -8,34 +8,6 @@ import (
 	goda "goda"
 )
 
-type ElementType int
-
-const (
-	TypeBox ElementType = iota
-	TypeText
-	TypeVStack
-	TypeHStack
-	TypeFlex
-	TypeCenter
-	TypeSeparator
-	TypeCheckbox
-	TypeSwitch
-	TypeInput
-	TypeButton
-)
-
-type Edge int
-
-const (
-	EdgeAll Edge = iota
-	EdgeTop
-	EdgeRight
-	EdgeBottom
-	EdgeLeft
-	EdgeHorizontal
-	EdgeVertical
-)
-
 type Element struct {
 	GNode    *goda.Node
 	children []*Element
@@ -81,6 +53,7 @@ type Element struct {
 	textBind    func() string
 	_bsStart    int
 	_cursorPos  int
+	_progress   float32
 }
 
 func NewElement(typ ElementType) *Element {
@@ -459,65 +432,6 @@ func (e *Element) Walk(fn func(elem *Element)) {
 }
 
 // ============================================
-// HTML Global Attributes
-// ============================================
-
-func (e *Element) ID(id string) *Element {
-	e.elemID = id
-	return e
-}
-
-func (e *Element) Class(classes ...string) *Element {
-	for _, c := range classes {
-		e.GNode.AddClass(c)
-	}
-	return e
-}
-
-func (e *Element) AddClass(cls string) *Element {
-	e.GNode.AddClass(cls)
-	return e
-}
-
-func (e *Element) HasClass(cls string) bool {
-	return e.GNode.HasClass(cls)
-}
-
-func (e *Element) GetClasses() []string {
-	return e.GNode.GetClasses()
-}
-
-func (e *Element) Hidden(v bool) *Element {
-	e.visible = !v
-	return e
-}
-
-func (e *Element) Title(title string) *Element {
-	e.tooltip = title
-	return e
-}
-
-func (e *Element) Lang(lang string) *Element {
-	e.lang = lang
-	return e
-}
-
-func (e *Element) Dir(dir string) *Element {
-	e.dir = dir
-	if dir == "rtl" {
-		e.GNode.SetDirection(goda.DirectionRTL)
-	} else {
-		e.GNode.SetDirection(goda.DirectionLTR)
-	}
-	return e
-}
-
-func (e *Element) TabIndex(idx int) *Element {
-	e.tabIndex = idx
-	return e
-}
-
-// ============================================
 // Additional CSS Props
 // ============================================
 
@@ -650,43 +564,15 @@ func (e *Element) Scrollable(v bool) *Element {
 	return e
 }
 
-func (e *Element) OnClick(handler func()) *Element {
-	e.onClick = handler
-	return e
-}
-
-func (e *Element) OnHover(handler func(entered bool)) *Element {
-	e.onHover = handler
-	return e
-}
-
-func (e *Element) SetUnderline(v bool) *Element {
-	e.underline = v
-	return e
-}
-
-func (e *Element) IsUnderline() bool { return e.underline }
-
-func (e *Element) SetChecked(v bool) *Element {
-	e.checked = v
-	return e
-}
-
-func (e *Element) IsChecked() bool { return e.checked }
-
-func (e *Element) SetPlaceholder(p string) *Element {
-	e.placeholder = p
-	return e
-}
-
-func (e *Element) Placeholder() string { return e.placeholder }
-
 func (e *Element) Use(getter func() string) *Element {
 	e.textBind = getter
 	return e
 }
 
 func (e *Element) TextBind() func() string { return e.textBind }
+
+func (e *Element) ProgressValue() float32 { return e._progress }
+func (e *Element) SetProgressValue(v float32) { e._progress = v }
 
 // ============================================
 // Getters for new fields
@@ -704,49 +590,6 @@ func (e *Element) CursorValue() CursorType   { return e.cursor }
 func (e *Element) BorderStyleValue() BorderStyle { return e.borderStyle }
 func (e *Element) CornerRadius() (tl, tr, bl, br float32) {
 	return e.radiusTL, e.radiusTR, e.radiusBL, e.radiusBR
-}
-
-// ============================================
-// Types
-// ============================================
-
-type BorderStyle int
-
-const (
-	BorderSolid BorderStyle = iota
-	BorderDashed
-	BorderDotted
-	BorderNone
-)
-
-type TextAlign int
-
-const (
-	AlignLeft TextAlign = iota
-	AlignCenter
-	AlignRight
-)
-
-type CursorType int
-
-const (
-	CursorDefault CursorType = iota
-	CursorPointer
-	CursorText
-	CursorMove
-	CursorNotAllowed
-	CursorCrosshair
-	CursorGrab
-	CursorGrabbing
-	CursorResize
-)
-
-type Shadow struct {
-	OffsetX float32
-	OffsetY float32
-	Blur    float32
-	Spread  float32
-	Color   color.NRGBA
 }
 
 func parseFloat(v string) float32 {

@@ -565,6 +565,99 @@ func themeColor(shade uint8) color.NRGBA {
 	return color.NRGBA{R: 255, G: 255, B: 255, A: 255}
 }
 
+func renderSpinner(rctx *RenderCtx, elem *Element) {
+	x, y, w, h := rctx.X, rctx.Y, rctx.W, rctx.H
+	cx := x + w/2
+	cy := y + h/2
+	r := w / 2
+	if h/2 < r {
+		r = h / 2
+	}
+	if r < 4 {
+		r = 4
+	}
+
+	clr := color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+	segments := 12
+	for i := 0; i < segments; i++ {
+		angle := float64(rctx.Frame)*0.15 - float64(i)*2*math.Pi/float64(segments)
+		a := uint8(255 * (1 - float64(i)/float64(segments)))
+		sc := color.NRGBA{R: clr.R, G: clr.G, B: clr.B, A: a}
+		sx := cx + float32(math.Cos(angle))*r*0.6
+		sy := cy + float32(math.Sin(angle))*r*0.6
+		ex := cx + float32(math.Cos(angle))*r*0.9
+		ey := cy + float32(math.Sin(angle))*r*0.9
+		vector.StrokeLine(rctx.Screen, sx, sy, ex, ey, 2, sc, true)
+	}
+}
+
+func renderProgress(rctx *RenderCtx, elem *Element) {
+	x, y, w, h := rctx.X, rctx.Y, rctx.W, rctx.H
+	if w <= 0 || h <= 0 {
+		return
+	}
+
+	trackClr := color.NRGBA{R: 237, G: 242, B: 247, A: 255}
+	fillClr := color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+
+	filledRoundedRect(rctx.Screen, x, y, w, h, h/2, trackClr)
+
+	val := elem._progress
+	if val < 0 {
+		val = 0
+	}
+	if val > 1 {
+		val = 1
+	}
+	fw := w * val
+	if fw < h {
+		fw = h
+	}
+	filledRoundedRect(rctx.Screen, x, y, fw, h, h/2, fillClr)
+}
+
+func renderAvatar(rctx *RenderCtx, elem *Element) {
+	x, y, w, h := rctx.X, rctx.Y, rctx.W, rctx.H
+	if w <= 0 || h <= 0 {
+		return
+	}
+
+	cx := x + w/2
+	cy := y + h/2
+	r := w / 2
+	if h/2 < r {
+		r = h / 2
+	}
+
+	bg := elem.bgColor
+	if bg.A == 0 {
+		bg = color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+	}
+	bg.A = uint8(255 * elem.opacity)
+
+	vector.DrawFilledCircle(rctx.Screen, cx, cy, r, bg, true)
+
+	txtClr := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+	for _, child := range elem.children {
+		label := child.TextContent()
+		if label != "" {
+			m := rctx.Font.Metrics()
+			desc := float32(m.Descent) / 64
+			drawCenteredText(rctx.Screen, label, rctx.Font, cx, cy+desc/2, txtClr)
+		}
+	}
+}
+
+func drawCenteredText(screen *ebiten.Image, str string, face font.Face, cx, cy float32, clr color.NRGBA) {
+	tw := textLen(str, face)
+	m := face.Metrics()
+	asc := float32(m.Ascent) / 64
+	desc := float32(m.Descent) / 64
+	x := cx - tw/2
+	baseline := cy + (asc-desc)/2
+	text.Draw(screen, str, face, int(x), int(baseline), clr)
+}
+
 func drawTextAligned(screen *ebiten.Image, str string, face font.Face, x, y, w, h float32, clr color.NRGBA, align TextAlign, lh float32) {
 	if lh <= 0 {
 		lh = 1.2
@@ -603,56 +696,3 @@ func textLen(str string, face font.Face) float32 {
 }
 
 func screen(rctx *RenderCtx) *ebiten.Image { return rctx.Screen }
-
-func RGBA(r, g, b uint8) color.NRGBA      { return color.NRGBA{R: r, G: g, B: b, A: 255} }
-func RGBAHex(s string) color.NRGBA         { return hexColor(s) }
-
-func hexColor(hex string) color.NRGBA {
-	if len(hex) == 0 || hex[0] != '#' {
-		return color.NRGBA{R: 128, G: 128, B: 128, A: 255}
-	}
-	hex = hex[1:]
-	var r, g, b uint8
-	switch len(hex) {
-	case 6:
-		v := uint32(0)
-		for _, c := range hex {
-			v = v*16 + uint32(hd(byte(c)))
-		}
-		r = uint8(v >> 16)
-		g = uint8(v >> 8)
-		b = uint8(v)
-	case 3:
-		v := uint32(0)
-		for _, c := range hex {
-			v = v*16 + uint32(hd(byte(c)))
-		}
-		r = uint8((v>>8)&0xF) * 17
-		g = uint8((v>>4)&0xF) * 17
-		b = uint8(v&0xF) * 17
-	default:
-		return color.NRGBA{R: 128, G: 128, B: 128, A: 255}
-	}
-	return color.NRGBA{R: r, G: g, B: b, A: 255}
-}
-
-func hd(c byte) uint8 {
-	switch {
-	case c >= '0' && c <= '9':
-		return c - '0'
-	case c >= 'a' && c <= 'f':
-		return c - 'a' + 10
-	case c >= 'A' && c <= 'F':
-		return c - 'A' + 10
-	}
-	return 0
-}
-
-func darkenColor(c color.NRGBA, amount float64) color.NRGBA {
-	return color.NRGBA{
-		R: uint8(math.Max(0, float64(c.R)*(1-amount))),
-		G: uint8(math.Max(0, float64(c.G)*(1-amount))),
-		B: uint8(math.Max(0, float64(c.B)*(1-amount))),
-		A: c.A,
-	}
-}
