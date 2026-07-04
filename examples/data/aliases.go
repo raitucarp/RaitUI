@@ -16,4 +16,5 @@ var (
 	Spinner   = raitui.Spinner
 	Avatar    = raitui.Avatar
 	Progress  = raitui.Progress
+	Window    = raitui.Window
 )

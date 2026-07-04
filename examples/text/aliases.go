@@ -15,4 +15,5 @@ var (
 	List       = raitui.List
 	Kbd        = raitui.Kbd
 	Mark       = raitui.Mark
+	Window    = raitui.Window
 )

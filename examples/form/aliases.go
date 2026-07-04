@@ -14,4 +14,5 @@ var (
 	Switch        = raitui.Switch
 	Input         = raitui.Input
 	TextArea      = raitui.TextArea
+	Window    = raitui.Window
 )

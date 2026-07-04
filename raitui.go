@@ -40,17 +40,32 @@ var (
 	Avatar      = component.Avatar
 	Progress    = component.Progress
 	Dialog      = component.Dialog
+	DialogRoot  = component.DialogRoot
 	Menu        = component.Menu
 	MenuItem    = component.MenuItem
 	Tooltip     = component.Tooltip
 	Popper      = component.Popper
+	Portal      = component.Portal
+	Window      = component.Window
+	App         = component.App
+	Portals     = component.Portals
+
+	DialogContent = component.DialogContent
+	DialogFooter  = component.DialogFooter
+	WithTooltip   = component.WithTooltip
+	WithPopper    = component.WithPopper
+	PopoverAt     = component.PopoverAt
+	PlaceTop      = core.PlaceTop
+	PlaceBottom   = core.PlaceBottom
+	PlaceLeft     = core.PlaceLeft
+	PlaceRight    = core.PlaceRight
 
 	Colors = theme.Colors
 
 	bgColor = theme.Gray50
 )
 
-func App() *core.Element {
+func DefaultApp() *core.Element {
 	return VStack().
 		Width("100%").Height("100%")
 }

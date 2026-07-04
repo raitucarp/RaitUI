@@ -7,4 +7,5 @@ var (
 	VStack = raitui.VStack
 	HStack = raitui.HStack
 	Text   = raitui.Text
+	Window    = raitui.Window
 )

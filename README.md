@@ -7,37 +7,59 @@ package main
 
 import (
     "raitui"
-    "raitui/core"
     "raitui/theme"
 )
 
 func main() {
-    root := raitui.VStack().
-        Width("100%").Height("100%").
+    app := raitui.App().
         Padding("24").Gap("16").
         BackgroundColor(theme.Gray50).
         Children(
-            raitui.Box().
-                Width("100%").Padding("16").
-                BackgroundColor(theme.Blue500).BorderRadius(8).
-                Children(
-                    raitui.Text("Hello RaitUI!").TextColor(theme.White).FontSize(18),
-                ),
+            raitui.Text("Hello RaitUI!").TextColor(theme.Gray800).FontSize(18),
             raitui.Button("Click Me"),
         )
 
-    ctx := core.NewContext(theme.Gray50)
-    ctx.SetMinWindowSize(400, 300)
-    ctx.Run(root, "My App", 800, 600)
+    raitui.Window().
+        Title("My App").
+        Width(800).Height(600).
+        MinSize(400, 300).
+        Children(app).
+        Run()
 }
 ```
 
-## Features
+## Quick Start
 
-- **Builder-pattern API** — all setters return `*Element` for chaining
-- **CSS-like props** — Width, Height, Padding, Margin, FlexGrow, AlignItems, etc.
-- **HTML global attributes** — ID, Class, Hidden, Title, Lang, Dir, TabIndex
-- **Flexbox layout** — powered by [goda](https://github.com/raitucarp/goda) (Go port of Yoga)
+```bash
+go install raitui/cmd/raitui@latest    # install CLI tool
+raitui init                             # generate aliases.go
+```
+
+```go
+package main
+
+import (
+    _ "raitui"    // or use aliases from generated aliases.go
+    "raitui/theme"
+)
+
+func main() {
+    app := App().
+        Padding("20").Gap("12").
+        BackgroundColor(theme.Gray50).
+        Children(
+            Heading("Welcome", 1),
+            Button("Get Started"),
+        )
+
+    Window().
+        Title("My App").
+        Width(800).Height(600).
+        MinSize(400, 300).
+        Children(app).
+        Run()
+}
+```
 - **Chakra-UI component system** — Box, VStack, HStack, Text, Flex, Center, Container, Heading, Button, Input, and more
 - **State management** — global + local state via sync.Map
 - **Full color palette** — 13 colors x 10 shades

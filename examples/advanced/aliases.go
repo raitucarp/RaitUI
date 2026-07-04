@@ -12,4 +12,5 @@ var (
 	Flex      = raitui.Flex
 	Center    = raitui.Center
 	Container = raitui.Container
+	Window    = raitui.Window
 )
