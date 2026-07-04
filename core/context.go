@@ -437,8 +437,10 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 		text.Draw(screen, txt, ctx.fontSm, int(x+2), int(y+10), clr)
 	}
 
-	for _, child := range elem.children {
-		renderElement(screen, child, x, y, ctx)
+	if elem.ElemType != TypeAvatar {
+		for _, child := range elem.children {
+			renderElement(screen, child, x, y, ctx)
+		}
 	}
 }
 
