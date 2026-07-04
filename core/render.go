@@ -635,7 +635,22 @@ func renderAvatar(rctx *RenderCtx, elem *Element) {
 	}
 	bg.A = uint8(255 * elem.opacity)
 
-	vector.DrawFilledCircle(rctx.Screen, cx, cy, r, bg, true)
+	if img, ok := elem.avatarImg.(*ebiten.Image); ok && img != nil {
+		op := &ebiten.DrawImageOptions{}
+		scaleX := w / float32(img.Bounds().Dx())
+		scaleY := h / float32(img.Bounds().Dy())
+		scale := scaleX
+		if scaleY < scale {
+			scale = scaleY
+		}
+		_ = scale
+		op.GeoM.Translate(-float64(img.Bounds().Dx())/2, -float64(img.Bounds().Dy())/2)
+		op.GeoM.Scale(float64(scale), float64(scale))
+		op.GeoM.Translate(float64(cx), float64(cy))
+		rctx.Screen.DrawImage(img, op)
+	} else {
+		vector.DrawFilledCircle(rctx.Screen, cx, cy, r, bg, true)
+	}
 
 	txtClr := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
 	for _, child := range elem.children {
@@ -674,7 +689,7 @@ func drawTextAligned(screen *ebiten.Image, str string, face font.Face, x, y, w, 
 	case AlignRight:
 		tx = x + w - tw - 4
 	default:
-		tx = x + 4
+		tx = x
 	}
 
 	th := (ascent + descent) * lh

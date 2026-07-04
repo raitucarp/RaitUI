@@ -54,6 +54,7 @@ type Element struct {
 	_bsStart    int
 	_cursorPos  int
 	_progress   float32
+	avatarImg   any
 }
 
 func NewElement(typ ElementType) *Element {
@@ -573,6 +574,13 @@ func (e *Element) TextBind() func() string { return e.textBind }
 
 func (e *Element) ProgressValue() float32 { return e._progress }
 func (e *Element) SetProgressValue(v float32) { e._progress = v }
+
+func (e *Element) SetAvatarImage(img any) *Element {
+	e.avatarImg = img
+	return e
+}
+
+func (e *Element) AvatarImage() any { return e.avatarImg }
 
 // ============================================
 // Getters for new fields

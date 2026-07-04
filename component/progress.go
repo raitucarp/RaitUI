@@ -16,7 +16,6 @@ func Progress(value float32) *core.Element {
 	elem.GNode.SetWidth(200).SetMinWidth(60)
 	elem.GNode.SetHeight(8).SetMinHeight(8)
 	elem.GNode.SetFlexShrink(0)
-	elem.GNode.SetFlexGrow(1)
 
 	elem.SetProgressValue(value / 100)
 	return elem
