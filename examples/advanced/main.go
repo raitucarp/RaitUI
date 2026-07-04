@@ -20,7 +20,7 @@ func main() {
 func buildUI() *core.Element {
 	getClicks := raitui.StateInt("clicks", 0)
 	setClicks := raitui.Setter[int]("clicks")
-	return raitui.VStack().
+	return VStack().
 		Width("100%").Height("100%").
 		MinWidth("600").MinHeight("400").
 		Padding("20").Gap("16").
@@ -32,46 +32,46 @@ func buildUI() *core.Element {
 }
 
 func header() *core.Element {
-	return raitui.Box().
+	return Box().
 		Width("860").Padding("16").
 		BackgroundColor(theme.White).BorderRadius(10).
 		BoxShadow(0, 2, 8, 0, rgba(0, 0, 0, 10)).
 		Children(
-			raitui.HStack().
+			HStack().
 				Width("100%").Gap("10").
 				JustifyContent(props.JustifySpaceBetween).
 				AlignItems(props.AlignCenter).
 				Children(
-					raitui.Text("RaitUI — Fixed Size Layout").TextColor(theme.Gray800).FontSize(16),
+					Text("RaitUI — Fixed Size Layout").TextColor(theme.Gray800).FontSize(16),
 					dots(),
 				),
 		)
 }
 
 func dots() *core.Element {
-	return raitui.HStack().Gap("10").Children(
+	return HStack().Gap("10").Children(
 		dot(theme.Blue500), dot(theme.Green500), dot(theme.Purple500),
 	)
 }
 
 func dot(c color.NRGBA) *core.Element {
-	return raitui.Box().Width("30").Height("30").BackgroundColor(c).BorderRadius(15)
+	return Box().Width("30").Height("30").BackgroundColor(c).BorderRadius(15)
 }
 
 func body(getClicks func() int, setClicks func(int)) *core.Element {
-	return raitui.HStack().Gap("16").Children(
+	return HStack().Gap("16").Children(
 		sidebar(),
 		mainContent(getClicks, setClicks),
 	)
 }
 
 func sidebar() *core.Element {
-	return raitui.Box().
+	return Box().
 		Width("180").Padding("8").
 		BackgroundColor(theme.White).BorderRadius(10).
 		BoxShadow(0, 1, 4, 0, rgba(0, 0, 0, 10)).
 		Children(
-			raitui.VStack().Gap("4").Children(
+			VStack().Gap("4").Children(
 				item("Dashboard", true),
 				item("Analytics", false),
 				item("Users", false),
@@ -87,16 +87,16 @@ func item(label string, active bool) *core.Element {
 		bg = theme.Blue500
 		txt = theme.White
 	}
-	return raitui.Box().
+	return Box().
 		Width("100%").PaddingX("14").PaddingY("9").
 		BackgroundColor(bg).BorderRadius(8).
 		Children(
-			raitui.Text(label).TextColor(txt).FontSize(13),
+			Text(label).TextColor(txt).FontSize(13),
 		)
 }
 
 func mainContent(getClicks func() int, setClicks func(int)) *core.Element {
-	return raitui.VStack().Width("560").Gap("16").Children(
+	return VStack().Width("560").Gap("16").Children(
 		clickCard(getClicks, setClicks),
 		statsRow(),
 		tagSection(),
@@ -104,7 +104,7 @@ func mainContent(getClicks func() int, setClicks func(int)) *core.Element {
 }
 
 func clickCard(getClicks func() int, setClicks func(int)) *core.Element {
-	card := raitui.Box().
+	card := Box().
 		Width("100%").Padding("20").
 		BackgroundColor(theme.White).BorderRadius(10).
 		BoxShadow(0, 2, 12, 0, rgba(0, 0, 0, 15))
@@ -118,16 +118,16 @@ func clickCard(getClicks func() int, setClicks func(int)) *core.Element {
 		}
 	})
 	card.Children(
-		raitui.VStack().Gap("8").Children(
-			raitui.Text("Interactive Card").TextColor(theme.Gray800).FontSize(16),
-			raitui.Text("Click card to test OnClick. Hover for OnHover.").TextColor(theme.Gray500).FontSize(12),
+		VStack().Gap("8").Children(
+			Text("Interactive Card").TextColor(theme.Gray800).FontSize(16),
+			Text("Click card to test OnClick. Hover for OnHover.").TextColor(theme.Gray500).FontSize(12),
 		),
 	)
 	return card
 }
 
 func statsRow() *core.Element {
-	return raitui.HStack().Width("100%").Gap("16").Children(
+	return HStack().Width("100%").Gap("16").Children(
 		statCard("Revenue", "$45,200", "+12.5%", theme.Green600),
 		statCard("Users", "2,840", "+8.2%", theme.Blue600),
 		statCard("Orders", "1,204", "-3.1%", theme.Red600),
@@ -139,28 +139,28 @@ func statCard(label, value, change string, accent color.NRGBA) *core.Element {
 	if change[0] == '-' {
 		chg = theme.Red600
 	}
-	return raitui.Box().
+	return Box().
 		FlexGrow(1).Padding("16").
 		BackgroundColor(theme.White).BorderRadius(10).
 		BoxShadow(0, 2, 8, 0, rgba(0, 0, 0, 10)).
 		Children(
-			raitui.VStack().Gap("4").Children(
-				raitui.Text(label).TextColor(theme.Gray500).FontSize(12),
-				raitui.Text(value).TextColor(theme.Gray800).FontSize(22),
-				raitui.Text(change).TextColor(chg).FontSize(13),
+			VStack().Gap("4").Children(
+				Text(label).TextColor(theme.Gray500).FontSize(12),
+				Text(value).TextColor(theme.Gray800).FontSize(22),
+				Text(change).TextColor(chg).FontSize(13),
 			),
 		)
 }
 
 func tagSection() *core.Element {
-	return raitui.Box().
+	return Box().
 		Width("100%").Padding("16").
 		BackgroundColor(theme.White).BorderRadius(10).
 		BoxShadow(0, 1, 4, 0, rgba(0, 0, 0, 10)).
 		Children(
-			raitui.VStack().Gap("10").Children(
-				raitui.Text("Features").TextColor(theme.Gray800).FontSize(16),
-				raitui.HStack().Gap("8").FlexWrap(props.WrapWrap).Children(
+			VStack().Gap("10").Children(
+				Text("Features").TextColor(theme.Gray800).FontSize(16),
+				HStack().Gap("8").FlexWrap(props.WrapWrap).Children(
 					tag("ID/Class", theme.Blue500),
 					tag("Shadow", theme.Purple500),
 					tag("Border", theme.Green500),
@@ -175,11 +175,11 @@ func tagSection() *core.Element {
 }
 
 func tag(label string, c color.NRGBA) *core.Element {
-	return raitui.Box().
+	return Box().
 		PaddingX("10").PaddingY("5").
 		BackgroundColor(c).BorderRadius(6).
 		Children(
-			raitui.Text(label).TextColor(theme.White).FontSize(12),
+			Text(label).TextColor(theme.White).FontSize(12),
 		)
 }
 

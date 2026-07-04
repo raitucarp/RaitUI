@@ -24,13 +24,13 @@ func buildUI() *core.Element {
 	outlineClicks := raitui.StateInt("outlineClicks", 0)
 	setOutline := raitui.Setter[int]("outlineClicks")
 
-	solidBtn := raitui.Button(fmt.Sprintf("Solid: %d", solidClicks()))
+	solidBtn := Button(fmt.Sprintf("Solid: %d", solidClicks()))
 	solidBtn.OnClick(func() {
 		setSolid(solidClicks() + 1)
 		solidBtn.SetTextContent(fmt.Sprintf("Solid: %d", solidClicks()))
 	})
 
-	outBtn := raitui.OutlineButton(fmt.Sprintf("Outline: %d", outlineClicks()))
+	outBtn := OutlineButton(fmt.Sprintf("Outline: %d", outlineClicks()))
 	outBtn.OnClick(func() {
 		setOutline(outlineClicks() + 1)
 		outBtn.SetTextContent(fmt.Sprintf("Outline: %d", outlineClicks()))
@@ -39,37 +39,37 @@ func buildUI() *core.Element {
 	var _ = solidBtn
 	var _ = outBtn
 
-	return raitui.VStack().
+	return VStack().
 		Width("100%").Height("100%").
 		MinWidth("400").MinHeight("350").
 		Padding("24").Gap("16").
 		BackgroundColor(theme.Gray50).
 		Children(
-			raitui.Text("Form Components").TextColor(theme.Gray800).FontSize(18),
-			raitui.Separator().Width("100%"),
+			Text("Form Components").TextColor(theme.Gray800).FontSize(18),
+			Separator().Width("100%"),
 
-			raitui.VStack().Gap("10").Children(
-				raitui.Text("Buttons").TextColor(theme.Gray400).FontSize(11),
-				raitui.HStack().Gap("10").Children(solidBtn, outBtn),
+			VStack().Gap("10").Children(
+				Text("Buttons").TextColor(theme.Gray400).FontSize(11),
+				HStack().Gap("10").Children(solidBtn, outBtn),
 			),
 
-			raitui.VStack().Gap("10").Children(
-				raitui.Text("Checkbox & Switch").TextColor(theme.Gray400).FontSize(11),
-				raitui.Checkbox("Accept terms", false),
-				raitui.Checkbox("Subscribe newsletter", true),
-				raitui.Switch("Dark mode", false),
-				raitui.Switch("Notifications", true),
+			VStack().Gap("10").Children(
+				Text("Checkbox & Switch").TextColor(theme.Gray400).FontSize(11),
+				Checkbox("Accept terms", false),
+				Checkbox("Subscribe newsletter", true),
+				Switch("Dark mode", false),
+				Switch("Notifications", true),
 			),
 
-			raitui.VStack().Gap("10").Children(
-				raitui.Text("Input (click then type)").TextColor(theme.Gray400).FontSize(11),
-				raitui.Input("Enter your name"),
-				raitui.Input("email@example.com"),
+			VStack().Gap("10").Children(
+				Text("Input (click then type)").TextColor(theme.Gray400).FontSize(11),
+				Input("Enter your name"),
+				Input("email@example.com"),
 			),
 
-			raitui.VStack().Gap("10").Children(
-				raitui.Text("TextArea (click then type)").TextColor(theme.Gray400).FontSize(11),
-				raitui.TextArea("Write your message..."),
+			VStack().Gap("10").Children(
+				Text("TextArea (click then type)").TextColor(theme.Gray400).FontSize(11),
+				TextArea("Write your message..."),
 			),
 		)
 }
