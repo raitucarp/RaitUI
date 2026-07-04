@@ -30,7 +30,7 @@ func renderBox(rctx *RenderCtx, elem *Element) {
 	if hasBorder {
 		border.A = alpha
 	} else {
-		border = color.NRGBA{}
+		border = ColorTransparent
 	}
 
 	x, y, w, h := rctx.X, rctx.Y, rctx.W, rctx.H
@@ -199,7 +199,7 @@ func renderText(rctx *RenderCtx, elem *Element) {
 
 	txtClr := elem.textClr
 	if txtClr.A == 0 {
-		txtClr = color.NRGBA{R: 0, G: 0, B: 0, A: 255}
+		txtClr = ColorBlack
 	}
 	txtClr.A = uint8(255 * elem.opacity)
 
@@ -228,7 +228,7 @@ func renderSeparator(rctx *RenderCtx, elem *Element) {
 	}
 	clr := elem.borderClr
 	if clr.A == 0 {
-		clr = color.NRGBA{R: 203, G: 213, B: 225, A: 255}
+		clr = ColorBorder
 	}
 	clr.A = uint8(255 * elem.opacity)
 	vector.StrokeLine(screen(rctx), rctx.X+4, rctx.Y+rctx.H/2, rctx.X+rctx.W-4, rctx.Y+rctx.H/2, 1, clr, true)
@@ -244,9 +244,9 @@ func renderCheckbox(rctx *RenderCtx, elem *Element) {
 	by := y + h/2 - boxSize/2
 
 	bg := themeColor(50)
-	borderClr := color.NRGBA{R: 203, G: 213, B: 225, A: 255}
+	borderClr := ColorBorder
 	if elem.checked {
-		bg = color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+		bg = ColorAccent
 		borderClr = bg
 	}
 
@@ -254,14 +254,14 @@ func renderCheckbox(rctx *RenderCtx, elem *Element) {
 	vector.StrokeRect(rctx.Screen, bx, by, boxSize, boxSize, 1.5, borderClr, true)
 
 	if elem.checked {
-		checkClr := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+		checkClr := ColorWhite
 		vector.StrokeLine(rctx.Screen, bx+4, by+boxSize/2, bx+boxSize/2, by+boxSize-5, 2, checkClr, true)
 		vector.StrokeLine(rctx.Screen, bx+boxSize/2, by+boxSize-5, bx+boxSize-3, by+4, 2, checkClr, true)
 	}
 
 	label := elem.TextContent()
 	if label != "" {
-		txtClr := color.NRGBA{R: 55, G: 65, B: 81, A: 255}
+		txtClr := ColorTextPrimary
 		drawTextAligned(rctx.Screen, label, rctx.Font, bx+boxSize+8, y, w-boxSize-8, h, txtClr, AlignLeft, 1.2)
 	}
 }
@@ -273,19 +273,19 @@ func renderSwitch(rctx *RenderCtx, elem *Element) {
 	tx := x + 2
 	ty := y + h/2 - th/2
 
-	bg := color.NRGBA{R: 203, G: 213, B: 225, A: 255}
+	bg := ColorBorder
 	knobX := tx + 2
 	if elem.checked {
-		bg = color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+		bg = ColorAccent
 		knobX = tx + tw - th + 2
 	}
 
 	filledRoundedRect(rctx.Screen, tx, ty, tw, th, th/2, bg)
-	vector.DrawFilledCircle(rctx.Screen, knobX+th/2-2, ty+th/2, th/2-3, color.NRGBA{R: 255, G: 255, B: 255, A: 255}, true)
+	vector.DrawFilledCircle(rctx.Screen, knobX+th/2-2, ty+th/2, th/2-3, ColorWhite, true)
 
 	label := elem.TextContent()
 	if label != "" {
-		txtClr := color.NRGBA{R: 55, G: 65, B: 81, A: 255}
+		txtClr := ColorTextPrimary
 		drawTextAligned(rctx.Screen, label, rctx.Font, tx+tw+8, y, w-tw-8, h, txtClr, AlignLeft, 1.2)
 	}
 }
@@ -296,10 +296,10 @@ func renderInput(rctx *RenderCtx, elem *Element) {
 		return
 	}
 
-	bg := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
-	borderClr := color.NRGBA{R: 203, G: 213, B: 225, A: 255}
+	bg := ColorWhite
+	borderClr := ColorBorder
 	if rctx.Focused || rctx.Hovered {
-		borderClr = color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+		borderClr = ColorAccent
 	}
 
 	drawRoundedBox(rctx.Screen, x, y, w, h, 4, bg, borderClr, Shadow{})
@@ -357,7 +357,7 @@ func renderInput(rctx *RenderCtx, elem *Element) {
 			if i == len(wrapped)-1 {
 			}
 
-			text.Draw(rctx.Screen, displayLine, rctx.Font, int(x+padX), int(ly), color.NRGBA{R: 55, G: 65, B: 81, A: 255})
+			text.Draw(rctx.Screen, displayLine, rctx.Font, int(x+padX), int(ly), ColorTextPrimary)
 		}
 
 		if rctx.Focused {
@@ -417,7 +417,7 @@ func renderInput(rctx *RenderCtx, elem *Element) {
 				cx = x + w - padX
 			}
 
-			cursorClr := color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+			cursorClr := ColorAccent
 			showCursor := (rctx.Frame/30)%2 == 0
 			if showCursor {
 				vector.StrokeLine(rctx.Screen, cx, caretY-asc+2, cx, caretY+desc-1, 1.5, cursorClr, true)
@@ -536,7 +536,7 @@ func renderButton(rctx *RenderCtx, elem *Element) {
 	if label != "" {
 		txtClr := elem.textClr
 		if txtClr.A == 0 {
-			txtClr = color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+			txtClr = ColorWhite
 		}
 		txtClr.A = uint8(255 * elem.opacity)
 		drawTextAligned(rctx.Screen, label, rctx.Font, x, y, w, h, txtClr, AlignCenter, 1.2)
@@ -562,7 +562,7 @@ func splitLines(s string) []string {
 }
 
 func themeColor(shade uint8) color.NRGBA {
-	return color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+	return ColorWhite
 }
 
 func renderSpinner(rctx *RenderCtx, elem *Element) {
@@ -577,7 +577,7 @@ func renderSpinner(rctx *RenderCtx, elem *Element) {
 		r = 4
 	}
 
-	clr := color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+	clr := ColorAccent
 	segments := 12
 	for i := 0; i < segments; i++ {
 		angle := float64(rctx.Frame)*0.15 - float64(i)*2*math.Pi/float64(segments)
@@ -598,7 +598,7 @@ func renderProgress(rctx *RenderCtx, elem *Element) {
 	}
 
 	trackClr := color.NRGBA{R: 237, G: 242, B: 247, A: 255}
-	fillClr := color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+	fillClr := ColorAccent
 
 	filledRoundedRect(rctx.Screen, x, y, w, h, h/2, trackClr)
 
@@ -631,7 +631,7 @@ func renderAvatar(rctx *RenderCtx, elem *Element) {
 
 	bg := elem.bgColor
 	if bg.A == 0 {
-		bg = color.NRGBA{R: 49, G: 130, B: 206, A: 255}
+		bg = ColorAccent
 	}
 	bg.A = uint8(255 * elem.opacity)
 
@@ -652,7 +652,7 @@ func renderAvatar(rctx *RenderCtx, elem *Element) {
 		vector.DrawFilledCircle(rctx.Screen, cx, cy, r, bg, true)
 	}
 
-	txtClr := color.NRGBA{R: 255, G: 255, B: 255, A: 255}
+	txtClr := ColorWhite
 	for _, child := range elem.children {
 		label := child.TextContent()
 		if label != "" {

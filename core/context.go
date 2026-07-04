@@ -314,7 +314,7 @@ func (g *game) Draw(screen *ebiten.Image) {
 	}
 
 	if g.ctx.Debug {
-		b := color.NRGBA{R: 255, G: 0, B: 0, A: 255}
+		b := ColorDebugRed
 		vector.StrokeRect(screen, 0, 0, float32(g.winW)-1, float32(g.winH)-1, 2, b, true)
 	}
 

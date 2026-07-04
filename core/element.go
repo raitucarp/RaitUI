@@ -575,7 +575,7 @@ func (e *Element) TextBind() func() string { return e.textBind }
 func (e *Element) ProgressValue() float32 { return e._progress }
 func (e *Element) SetProgressValue(v float32) { e._progress = v }
 
-func (e *Element) SetAvatarImage(img any) *Element {
+func (e *Element) Image(img any) *Element {
 	e.avatarImg = img
 	return e
 }
