@@ -39,6 +39,11 @@ var (
 	Spinner     = component.Spinner
 	Avatar      = component.Avatar
 	Progress    = component.Progress
+	Dialog      = component.Dialog
+	Menu        = component.Menu
+	MenuItem    = component.MenuItem
+	Tooltip     = component.Tooltip
+	Popper      = component.Popper
 
 	Colors = theme.Colors
 

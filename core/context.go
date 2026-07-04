@@ -35,9 +35,13 @@ type Context struct {
 	focused *Element
 	frame   int
 	kb      *keyboard.Handler
+	overlay *Element
 }
 
 func (c *Context) Keyboard() *keyboard.Handler { return c.kb }
+
+func (c *Context) OpenOverlay(elem *Element) { c.overlay = elem }
+func (c *Context) CloseOverlay()             { c.overlay = nil }
 
 type RenderFunc func(ctx *RenderCtx)
 
@@ -309,8 +313,11 @@ func handleKeyboardInput(elem *Element, kb *keyboard.Handler, frame int) {
 
 func (g *game) Draw(screen *ebiten.Image) {
 	screen.Fill(g.ctx.bgColor)
-	if g.ctx.Root == nil {
-		return
+	if g.ctx.Root != nil {
+		renderElement(screen, g.ctx.Root, 0, 0, g.ctx)
+	}
+	if g.ctx.overlay != nil {
+		renderElement(screen, g.ctx.overlay, 0, 0, g.ctx)
 	}
 
 	if g.ctx.Debug {
@@ -390,6 +397,8 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 		renderProgress(rctx, elem)
 	case TypeAvatar:
 		renderAvatar(rctx, elem)
+	case TypeMenu, TypeDialog, TypeTooltip:
+		renderStack(rctx, elem)
 	}
 
 	if ctx.Debug && w > 0 && h > 0 {
@@ -432,6 +441,12 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 			label = "Pr"
 		case TypeAvatar:
 			label = "Av"
+		case TypeDialog:
+			label = "Dg"
+		case TypeMenu:
+			label = "Mn"
+		case TypeTooltip:
+			label = "Tt"
 		}
 		txt := fmt.Sprintf("%s %.0fx%.0f", label, w, h)
 		text.Draw(screen, txt, ctx.fontSm, int(x+2), int(y+10), clr)

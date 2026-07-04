@@ -19,6 +19,9 @@ const (
 	TypeSpinner
 	TypeProgress
 	TypeAvatar
+	TypeDialog
+	TypeMenu
+	TypeTooltip
 )
 
 type Edge int
