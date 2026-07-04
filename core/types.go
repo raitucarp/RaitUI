@@ -67,6 +67,15 @@ const (
 	CursorResize
 )
 
+type Placement int
+
+const (
+	PlaceTop Placement = iota
+	PlaceBottom
+	PlaceLeft
+	PlaceRight
+)
+
 type Shadow struct {
 	OffsetX float32
 	OffsetY float32

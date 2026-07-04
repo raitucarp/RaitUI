@@ -35,14 +35,56 @@ type Context struct {
 	focused *Element
 	frame   int
 	kb      *keyboard.Handler
-	overlay *Element
+	layers  []*layer
+	modal   *Element
 }
+
+type layer struct {
+	elem   *Element
+	gNode  *goda.Node
+}
+
+func (c *Context) SetModal(elem *Element) { c.modal = elem }
+func (c *Context) IsModal() bool          { return c.modal != nil }
 
 func (c *Context) Keyboard() *keyboard.Handler { return c.kb }
 
-func (c *Context) OpenOverlay(elem *Element) { c.overlay = elem }
-func (c *Context) CloseOverlay()             { c.overlay = nil }
+func (c *Context) PushLayer(elem *Element) {
+	if elem.GNode.GetParent() != nil {
+		elem.GNode.GetParent().RemoveChildNode(elem.GNode)
+	}
+	gn := goda.New()
+	gn.InsertChildNode(elem.GNode, 0)
+	c.layers = append(c.layers, &layer{elem: elem, gNode: gn})
+	if c.winW > 0 {
+		c.rebuildLayers()
+	}
+}
 
+func (c *Context) PopLayer(elem *Element) {
+	for i, l := range c.layers {
+		if l.elem == elem {
+			c.layers = append(c.layers[:i], c.layers[i+1:]...)
+			c.rebuildLayers()
+			return
+		}
+	}
+}
+
+func (c *Context) rebuildLayers() {
+	for _, l := range c.layers {
+		goda.CalculateNodeLayout(l.gNode, float32(c.winW), float32(c.winH), goda.DirectionLTR)
+	}
+}
+
+func (c *Context) TopLayer() *Element {
+	if len(c.layers) == 0 {
+		return nil
+	}
+	return c.layers[len(c.layers)-1].elem
+}
+
+func (c *Context) HasLayer() bool { return len(c.layers) > 1 }
 type RenderFunc func(ctx *RenderCtx)
 
 type RenderCtx struct {
@@ -95,6 +137,7 @@ func (c *Context) Run(root *Element, title string, width, height int) {
 	c.winW = width
 	c.winH = height
 	c.kb = keyboard.New()
+	root.setLayoutCtx(c)
 	c.initFont()
 
 	c.Game = &game{
@@ -118,7 +161,13 @@ func (c *Context) Run(root *Element, title string, width, height int) {
 }
 
 func (c *Context) RebuildLayout() {
-	if c.Root == nil || c.Root.GNode == nil {
+	if c.Root != nil {
+		c.ForceLayout()
+	}
+}
+
+func (c *Context) ForceLayout() {
+	if c.Root == nil {
 		return
 	}
 	goda.CalculateNodeLayout(c.Root.GNode, float32(c.winW), float32(c.winH), goda.DirectionLTR)
@@ -155,7 +204,7 @@ func (g *game) Update() error {
 	}
 
 	if g.ctx.Root != nil {
-		dispatchHover(g.ctx.Root, 0, 0, float32(mx), float32(my))
+		dispatchHover(g.ctx.Root, 0, 0, float32(mx), float32(my), g.ctx.modal)
 	}
 
 	if g.ctx.focused != nil && g.ctx.focused.ElemType == TypeInput {
@@ -167,10 +216,11 @@ func (g *game) Update() error {
 	return nil
 }
 
-func dispatchHover(elem *Element, absLeft, absTop, mx, my float32) {
+func dispatchHover(elem *Element, absLeft, absTop, mx, my float32, modal *Element) {
 	if !elem.visible {
 		return
 	}
+
 	lo := elem.GNode.LayoutOut()
 	x := absLeft + float32(lo.Left)
 	y := absTop + float32(lo.Top)
@@ -180,18 +230,55 @@ func dispatchHover(elem *Element, absLeft, absTop, mx, my float32) {
 	hovered := w > 0 && h > 0 && mx >= x && mx < x+w && my >= y && my < y+h
 
 	if elem.onHover != nil {
-		elem.onHover(hovered)
+		blocked := modal != nil && !inModalTree(elem, modal)
+		if !blocked {
+			elem.onHover(hovered)
+		}
 	}
 
 	for _, child := range elem.children {
-		dispatchHover(child, x, y, mx, my)
+		dispatchHover(child, x, y, mx, my, modal)
 	}
+}
+
+func inModalTree(elem, modal *Element) bool {
+	if elem == modal {
+		return true
+	}
+	for p := elem.parent; p != nil; p = p.parent {
+		if p == modal {
+			return true
+		}
+	}
+	for p := modal.parent; p != nil; p = p.parent {
+		if p == elem {
+			return true
+		}
+	}
+	return false
+}
+
+func (e *Element) IsChildOf(ancestor *Element) bool {
+	if e == ancestor {
+		return true
+	}
+	for p := e.parent; p != nil; p = p.parent {
+		if p == ancestor {
+			return true
+		}
+	}
+	return false
 }
 
 func dispatchClick(ctx *Context, elem *Element, absLeft, absTop, mx, my float32) bool {
 	if !elem.visible {
 		return false
 	}
+
+	if ctx.modal != nil && !inModalTree(elem, ctx.modal) {
+		return false
+	}
+
 	lo := elem.GNode.LayoutOut()
 	x := absLeft + float32(lo.Left)
 	y := absTop + float32(lo.Top)
@@ -316,16 +403,19 @@ func (g *game) Draw(screen *ebiten.Image) {
 	if g.ctx.Root != nil {
 		renderElement(screen, g.ctx.Root, 0, 0, g.ctx)
 	}
-	if g.ctx.overlay != nil {
-		renderElement(screen, g.ctx.overlay, 0, 0, g.ctx)
+
+	var floating []*Element
+	collectFloating(g.ctx.Root, &floating)
+	for _, el := range floating {
+		if el._triggerRef != nil {
+			renderWithTrigger(screen, el, g.ctx)
+		}
 	}
 
 	if g.ctx.Debug {
 		b := ColorDebugRed
 		vector.StrokeRect(screen, 0, 0, float32(g.winW)-1, float32(g.winH)-1, 2, b, true)
 	}
-
-	renderElement(screen, g.ctx.Root, 0, 0, g.ctx)
 }
 
 func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -347,10 +437,126 @@ func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return outsideWidth, outsideHeight
 }
 
+func collectFloating(elem *Element, out *[]*Element) {
+	if elem._triggerRef != nil && elem.visible {
+		*out = append(*out, elem)
+	}
+	for _, child := range elem.children {
+		collectFloating(child, out)
+	}
+}
+
+func renderWithTrigger(screen *ebiten.Image, elem *Element, ctx *Context) {
+	ref := elem._triggerRef
+	if ref == nil {
+		return
+	}
+	refLo := ref.GNode.LayoutOut()
+	refAbsLeft := refLo.Left
+	refAbsTop := refLo.Top
+	cur := ref.parent
+	for cur != nil {
+		curLo := cur.GNode.LayoutOut()
+		refAbsLeft += curLo.Left
+		refAbsTop += curLo.Top
+		cur = cur.parent
+	}
+
+	toolW := float32(elem.GNode.LayoutOut().Width)
+	toolH := float32(elem.GNode.LayoutOut().Height)
+	refW := float32(refLo.Width)
+	refH := float32(refLo.Height)
+	gap := float32(6)
+
+	var atX, atY float32
+	switch Placement(elem._tooltipPlace) {
+	case PlaceTop:
+		atY = refAbsTop - toolH - gap
+		atX = refAbsLeft
+	case PlaceBottom:
+		atY = refAbsTop + refH + gap
+		atX = refAbsLeft
+	case PlaceLeft:
+		atX = refAbsLeft - toolW - gap
+		atY = refAbsTop
+	case PlaceRight:
+		atX = refAbsLeft + refW + gap
+		atY = refAbsTop
+	}
+
+	renderElementAt(screen, elem, atX, atY, ctx)
+}
+
+func renderElementAt(screen *ebiten.Image, elem *Element, absX, absY float32, ctx *Context) {
+	lo := elem.GNode.LayoutOut()
+	x := absX
+	y := absY
+	w := float32(lo.Width)
+	h := float32(lo.Height)
+
+	mx := float32(ctx.mouseX)
+	my := float32(ctx.mouseY)
+	hovered := w > 0 && h > 0 && mx >= x && mx < x+w && my >= y && my < y+h
+
+	rctx := &RenderCtx{
+		Screen:  screen,
+		Elem:    elem,
+		X:       x,
+		Y:       y,
+		W:       w,
+		H:       h,
+		Font:    selectFont(ctx, elem),
+		Hovered: hovered,
+		Focused: ctx.focused == elem,
+		Frame:   ctx.frame,
+	}
+
+	switch elem.ElemType {
+	case TypeBox:
+		renderBox(rctx, elem)
+	case TypeText:
+		renderText(rctx, elem)
+	case TypeVStack, TypeHStack, TypeFlex, TypeCenter:
+		renderStack(rctx, elem)
+	case TypeSeparator:
+		renderSeparator(rctx, elem)
+	case TypeCheckbox:
+		renderCheckbox(rctx, elem)
+	case TypeSwitch:
+		renderSwitch(rctx, elem)
+	case TypeInput:
+		renderInput(rctx, elem)
+	case TypeButton:
+		renderButton(rctx, elem)
+	case TypeSpinner:
+		renderSpinner(rctx, elem)
+	case TypeProgress:
+		renderProgress(rctx, elem)
+	case TypeAvatar:
+		renderAvatar(rctx, elem)
+	case TypeMenu, TypeDialog, TypeTooltip:
+		renderStack(rctx, elem)
+	}
+
+	if elem.ElemType != TypeAvatar {
+		for _, child := range elem.children {
+			childLo := child.GNode.LayoutOut()
+			cx := x + float32(childLo.Left)
+			cy := y + float32(childLo.Top)
+			renderElementAt(screen, child, cx, cy, ctx)
+		}
+	}
+}
+
 func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32, ctx *Context) {
 	if !elem.visible {
 		return
 	}
+
+	if elem._triggerRef != nil {
+		return
+	}
+
 	lo := elem.GNode.LayoutOut()
 	x := absLeft + float32(lo.Left)
 	y := absTop + float32(lo.Top)
@@ -453,7 +659,15 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 	}
 
 	if elem.ElemType != TypeAvatar {
+		var absoluteChildren []*Element
 		for _, child := range elem.children {
+			if child.GNode.GetPositionType() == goda.PositionTypeAbsolute {
+				absoluteChildren = append(absoluteChildren, child)
+			} else {
+				renderElement(screen, child, x, y, ctx)
+			}
+		}
+		for _, child := range absoluteChildren {
 			renderElement(screen, child, x, y, ctx)
 		}
 	}

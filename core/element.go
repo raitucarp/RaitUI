@@ -55,6 +55,12 @@ type Element struct {
 	_cursorPos  int
 	_progress   float32
 	avatarImg   any
+	hsh         string
+	DialogCard  *Element
+	DialogFooter *Element
+	_layoutCtx  *Context
+	_tooltipPlace int
+	_triggerRef  *Element
 }
 
 func NewElement(typ ElementType) *Element {
@@ -386,7 +392,77 @@ func (e *Element) Opacity(v float32) *Element {
 
 func (e *Element) Visible(v bool) *Element {
 	e.visible = v
+	if v {
+		e.GNode.SetDisplay(goda.DisplayFlex)
+	} else {
+		e.GNode.SetDisplay(goda.DisplayNone)
+	}
+	if e._layoutCtx != nil {
+		e._layoutCtx.ForceLayout()
+	}
 	return e
+}
+
+func (e *Element) ToggleVisible() *Element {
+	return e.Visible(!e.visible)
+}
+
+func (e *Element) Open() *Element {
+	e.Visible(true)
+	if e._layoutCtx != nil {
+		e._layoutCtx.modal = e
+	}
+	return e
+}
+
+func (e *Element) Close() *Element {
+	e.Visible(false)
+	if e._layoutCtx != nil {
+		e._layoutCtx.modal = nil
+	}
+	return e
+}
+
+func (e *Element) IsOpen() bool { return e.visible }
+
+func (e *Element) TooltipPlacement(p Placement) *Element {
+	e._tooltipPlace = int(p)
+	e.GNode.SetEdgePositionAuto(goda.EdgeTop)
+	e.GNode.SetEdgePositionAuto(goda.EdgeLeft)
+	e.GNode.SetEdgePositionAuto(goda.EdgeRight)
+	e.GNode.SetEdgePositionAuto(goda.EdgeBottom)
+
+	switch p {
+	case PlaceTop:
+		e.GNode.SetEdgePosition(goda.EdgeTop, float32(-36))
+	case PlaceBottom:
+		e.GNode.SetEdgePosition(goda.EdgeTop, float32(44))
+	case PlaceLeft:
+		e.GNode.SetEdgePosition(goda.EdgeRight, float32(128))
+	case PlaceRight:
+		e.GNode.SetEdgePosition(goda.EdgeLeft, float32(128))
+	}
+	return e
+}
+
+func (e *Element) hasVisibleOverlay() bool {
+	for _, child := range e.children {
+		if child.visible && child.ElemType == TypeBox && child.Width("") != nil && child.Height("") != nil {
+			// Check if child is a full-screen overlay (like dialog backdrop)
+			lo := child.GNode.LayoutOut()
+			if lo.Width > 100 && lo.Height > 100 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (e *Element) setLayoutCtx(ctx *Context) {
+	e._layoutCtx = ctx
+	for _, child := range e.children {
+		child.setLayoutCtx(ctx)
+	}
 }
 
 func (e *Element) TextContent() string {
@@ -574,6 +650,13 @@ func (e *Element) TextBind() func() string { return e.textBind }
 
 func (e *Element) ProgressValue() float32 { return e._progress }
 func (e *Element) SetProgressValue(v float32) { e._progress = v }
+
+func (e *Element) SetTrigger(ref *Element) *Element {
+	e._triggerRef = ref
+	return e
+}
+
+func (e *Element) TriggerRef() *Element { return e._triggerRef }
 
 func (e *Element) Image(img any) *Element {
 	e.avatarImg = img
