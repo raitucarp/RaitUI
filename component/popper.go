@@ -2,6 +2,7 @@ package component
 
 import (
 	goda "goda"
+
 	"raitui/core"
 	"raitui/theme"
 )
@@ -16,5 +17,26 @@ func Popper() *core.Element {
 	elem.GNode.SetFlexDirection(goda.FlexDirectionColumn)
 	elem.GNode.SetFlexShrink(0)
 	elem.GNode.SetMinWidth(200)
+	elem.GNode.SetPositionType(goda.PositionTypeAbsolute)
+	elem.GNode.SetPadding(goda.EdgeAll, 8)
 	return elem
+}
+
+func PopoverAt(target, pop *core.Element, placement core.Placement) *core.Element {
+	target.GNode.SetPositionType(goda.PositionTypeRelative)
+	target.Children(pop)
+	pop.Visible(false)
+	pop.SetTrigger(target)
+	pop.TooltipPlacement(placement)
+	target.OnClick(func() { pop.Visible(!pop.IsVisible()) })
+	return target
+}
+
+func WithPopper(target, pop *core.Element) *core.Element {
+	target.GNode.SetPositionType(goda.PositionTypeRelative)
+	target.Children(pop)
+	pop.Visible(false)
+	pop.SetTrigger(target)
+	target.OnClick(func() { pop.Visible(!pop.IsVisible()) })
+	return target
 }
