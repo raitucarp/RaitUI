@@ -1,10 +1,16 @@
 package main
 
 import (
+	"image"
+	"image/color"
+	"math/rand"
+
 	"raitui"
 	"raitui/core"
 	"raitui/props"
 	"raitui/theme"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 var (
@@ -17,7 +23,20 @@ func main() {
 	root := buildUI()
 	ctx := core.NewContext(theme.Gray50)
 	ctx.SetMinWindowSize(450, 400)
-	ctx.Run(root, "RaitUI - Data Components", 720, 700)
+	ctx.Run(root, "RaitUI - Data Components", 720, 720)
+}
+
+func genAvatarImg() *ebiten.Image {
+	img := image.NewRGBA(image.Rect(0, 0, 80, 80))
+	for y := 0; y < 80; y++ {
+		for x := 0; x < 80; x++ {
+			r := uint8(49 + rand.Intn(30))
+			g := uint8(130 + rand.Intn(30))
+			b := uint8(206 + rand.Intn(30))
+			img.Set(x, y, color.RGBA{R: r, G: g, B: b, A: 255})
+		}
+	}
+	return ebiten.NewImageFromImage(img)
 }
 
 func buildUI() *core.Element {
@@ -78,14 +97,11 @@ func buildUI() *core.Element {
 			Alert("warning").Children(Text("Warning: Disk usage at 85%.").FontSize(13)),
 			Alert("error").Children(Text("Error: Connection failed.").FontSize(13)),
 
-			sectionLabel("Avatar & Spinner"),
+			sectionLabel("Avatar (with image + fallback)"),
 			HStack().Gap("12").AlignItems(props.AlignCenter).Children(
-				Avatar("John Doe"),
+				Avatar("John Doe").Image(genAvatarImg()),
 				Avatar("Alice Smith").BackgroundColor(theme.Green500),
 				Avatar("Bob").BackgroundColor(theme.Purple500),
-				Spacer(),
-				Spinner(),
-				Text("Loading...").TextColor(theme.Gray500).FontSize(13),
 			),
 
 			sectionLabel("Progress"),

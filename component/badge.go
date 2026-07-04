@@ -48,6 +48,7 @@ func BadgeVariant(label, variant, colorScheme string) *core.Element {
 	t := Text(label)
 	t.TextColor(txt)
 	t.FontSize(11)
+	t.TextAlign(core.AlignCenter)
 	elem.Children(t)
 
 	return elem
