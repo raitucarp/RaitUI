@@ -25,10 +25,10 @@ func renderBox(rctx *RenderCtx, elem *Element) {
 	hasBorder := border.A > 0 && border != bg
 
 	if hasBg {
-		bg.A = alpha
+		bg.A = uint8(float32(bg.A) * elem.opacity)
 	}
 	if hasBorder {
-		border.A = alpha
+		border.A = uint8(float32(border.A) * elem.opacity)
 	} else {
 		border = ColorTransparent
 	}
@@ -38,10 +38,6 @@ func renderBox(rctx *RenderCtx, elem *Element) {
 	tl, tr, bl, br := elem.CornerRadius()
 	if tl > 0 || tr > 0 || bl > 0 || br > 0 {
 		r = max(max(tl, tr), max(bl, br))
-	}
-
-	if !hasBg && !hasBorder {
-		return
 	}
 
 	if r > 0 {
