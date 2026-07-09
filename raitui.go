@@ -117,6 +117,10 @@ var (
 	DataListValue       = component.DataListValue
 	Splitter            = component.Splitter
 	Float               = component.Float
+	Grid                = component.Grid
+	GridItem            = component.GridItem
+	SimpleGrid          = component.SimpleGrid
+	Icon                = component.Icon
 
 	DialogContent = component.DialogContent
 	DialogFooter  = component.DialogFooter

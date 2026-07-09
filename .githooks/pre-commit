@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+echo ">>> Running tests..."
+go test ./core/ -count=1
+echo ">>> Running vet..."
+go vet ./...
+echo ">>> Building all examples..."
+for dir in examples/*/; do
+    go build "./$dir" || exit 1
+done
+echo ">>> Pre-commit OK"
