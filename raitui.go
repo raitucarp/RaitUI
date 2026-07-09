@@ -109,6 +109,14 @@ var (
 	NumberInput         = component.NumberInput
 	SegmentedControl    = component.SegmentedControl
 	Segment             = component.Segment
+	Show                = component.Show
+	VisuallyHidden      = component.VisuallyHidden
+	DataList            = component.DataList
+	DataListItem        = component.DataListItem
+	DataListLabel       = component.DataListLabel
+	DataListValue       = component.DataListValue
+	Splitter            = component.Splitter
+	Float               = component.Float
 
 	DialogContent = component.DialogContent
 	DialogFooter  = component.DialogFooter
