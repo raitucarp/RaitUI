@@ -593,7 +593,12 @@ func renderProgress(rctx *RenderCtx, elem *Element) {
 		return
 	}
 
-	trackClr := color.NRGBA{R: 237, G: 242, B: 247, A: 255}
+	if w == h {
+		renderCircleProgress(rctx, elem, x, y, w)
+		return
+	}
+
+	trackClr := ColorBgTrack
 	fillClr := ColorAccent
 
 	filledRoundedRect(rctx.Screen, x, y, w, h, h/2, trackClr)
@@ -610,6 +615,35 @@ func renderProgress(rctx *RenderCtx, elem *Element) {
 		fw = h
 	}
 	filledRoundedRect(rctx.Screen, x, y, fw, h, h/2, fillClr)
+}
+
+func renderCircleProgress(rctx *RenderCtx, elem *Element, x, y, size float32) {
+	cx := x + size/2
+	cy := y + size/2
+	r := size/2 - 3
+	
+	trackClr := ColorBgTrack
+	fillClr := ColorAccent
+
+	vector.StrokeCircle(rctx.Screen, cx, cy, r, 3, trackClr, true)
+
+	val := elem._progress
+	if val < 0 { val = 0 }
+	if val > 1 { val = 1 }
+
+	segments := 36
+	endAngle := float64(val) * 2 * math.Pi
+	for i := 0; i < segments; i++ {
+		a0 := float64(i) * 2 * math.Pi / float64(segments)
+		if a0 > endAngle { break }
+		a1 := float64(i+1) * 2 * math.Pi / float64(segments)
+		if a1 > endAngle { a1 = endAngle }
+		sx := cx + float32(math.Cos(a0))*r
+		sy := cy + float32(math.Sin(a0))*r
+		ex := cx + float32(math.Cos(a1))*r
+		ey := cy + float32(math.Sin(a1))*r
+		vector.StrokeLine(rctx.Screen, sx, sy, ex, ey, 3, fillClr, true)
+	}
 }
 
 func renderAvatar(rctx *RenderCtx, elem *Element) {

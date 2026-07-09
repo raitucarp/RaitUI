@@ -99,6 +99,16 @@ var (
 	Step                = component.Step
 	StepIndicator       = component.StepIndicator
 	StepSeparator       = component.StepSeparator
+	CloseButton         = component.CloseButton
+	Status              = component.Status
+	EmptyState          = component.EmptyState
+	ProgressCircle      = component.ProgressCircle
+	RadioGroup          = component.RadioGroup
+	Radio               = component.Radio
+	Image               = component.Image
+	NumberInput         = component.NumberInput
+	SegmentedControl    = component.SegmentedControl
+	Segment             = component.Segment
 
 	DialogContent = component.DialogContent
 	DialogFooter  = component.DialogFooter
