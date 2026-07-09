@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"image"
 	"image/color"
 	"log"
 
@@ -205,6 +206,18 @@ func (g *game) Update() error {
 
 	if g.ctx.Root != nil {
 		dispatchHover(g.ctx.Root, 0, 0, float32(mx), float32(my), g.ctx.modal)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyDown) && g.ctx.Root != nil {
+		scrollAll(g.ctx.Root, 1)
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyUp) && g.ctx.Root != nil {
+		scrollAll(g.ctx.Root, -1)
+	}
+
+	x, y := ebiten.Wheel()
+	if (x != 0 || y != 0) && g.ctx.Root != nil {
+		scrollAll(g.ctx.Root, float32(y))
 	}
 
 	if g.ctx.focused != nil && g.ctx.focused.ElemType == TypeInput {
@@ -418,6 +431,79 @@ func (g *game) Draw(screen *ebiten.Image) {
 	}
 }
 
+func scrollAll(elem *Element, dy float32) {
+	if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll {
+		totalH := float32(0)
+		for _, child := range elem.children {
+			totalH += child.GNode.LayoutOut().Height
+		}
+		if totalH > elem.GNode.LayoutOut().Height {
+			elem.Scroll(dy * 5)
+		}
+	}
+	for _, child := range elem.children {
+		scrollAll(child, dy)
+	}
+}
+
+func dispatchScroll(elem *Element, mx, my, wx, wy float32) {
+	dispatchScrollAt(elem, 0, 0, mx, my, wx, wy)
+}
+
+func dispatchScrollAt(elem *Element, absX, absY, mx, my, wx, wy float32) {
+	if !elem.visible {
+		return
+	}
+	lo := elem.GNode.LayoutOut()
+	x := absX + lo.Left
+	y := absY + lo.Top
+	w := lo.Width
+	h := lo.Height
+
+	hovered := w > 0 && h > 0 && mx >= x && mx < x+w && my >= y && my < y+h
+	if hovered && elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll && elem.GNode.GetOverflow() == goda.OverflowScroll {
+		elem.Scroll(wy * 5)
+		return
+	}
+
+	for _, child := range elem.children {
+		dispatchScrollAt(child, x, y, mx, my, wx, wy)
+	}
+}
+
+func drawScrollThumb(rctx *RenderCtx, elem *Element) {
+	x, y, w, h := rctx.X, rctx.Y, rctx.W, rctx.H
+	totalH := float32(0)
+	for _, child := range elem.children {
+		totalH += child.GNode.LayoutOut().Height
+	}
+	if totalH <= h || h <= 0 {
+		return
+	}
+	sy := elem.ScrollY()
+	maxScroll := totalH - h
+	if maxScroll <= 0 {
+		maxScroll = 1
+	}
+	ratio := sy / maxScroll
+	if ratio < 0 {
+		ratio = 0
+	}
+	if ratio > 1 {
+		ratio = 1
+	}
+	thumbH := h * h / totalH
+	if thumbH < 20 {
+		thumbH = 20
+	}
+	thumbY := y + (h-thumbH)*ratio
+	tw := float32(4)
+	tx := x + w - tw - 2
+
+	thumbClr := color.NRGBA{R: 160, G: 174, B: 192, A: 200}
+	filledRoundedRect(rctx.Screen, tx, thumbY, tw, thumbH, 2, thumbClr)
+}
+
 func (g *game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	if outsideWidth <= 0 {
 		outsideWidth = 800
@@ -538,12 +624,34 @@ func renderElementAt(screen *ebiten.Image, elem *Element, absX, absY float32, ct
 		renderStack(rctx, elem)
 	}
 
+	if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll && elem.GNode.GetOverflow() == goda.OverflowScroll {
+		drawScrollThumb(rctx, elem)
+	}
+
 	if elem.ElemType != TypeAvatar {
+		scrollY := float32(0)
+		if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll {
+			totalH := float32(0)
+			for _, child := range elem.children {
+				totalH += child.GNode.LayoutOut().Height
+			}
+			viewH := float32(elem.GNode.LayoutOut().Height)
+			if totalH > viewH {
+				scrollY = elem.ScrollY()
+				elem.SetScrollMax(totalH - viewH)
+			}
+		}
 		for _, child := range elem.children {
 			childLo := child.GNode.LayoutOut()
 			cx := x + float32(childLo.Left)
-			cy := y + float32(childLo.Top)
-			renderElementAt(screen, child, cx, cy, ctx)
+			cy := y + float32(childLo.Top) - scrollY
+			ch := childLo.Height
+			if ch <= 0 {
+				ch = 20
+			}
+			if cy+ch > y && cy < y+h {
+				renderElementAt(screen, child, cx, cy, ctx)
+			}
 		}
 	}
 }
@@ -607,6 +715,10 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 		renderStack(rctx, elem)
 	}
 
+	if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll && elem.GNode.GetOverflow() == goda.OverflowScroll {
+		drawScrollThumb(rctx, elem)
+	}
+
 	if ctx.Debug && w > 0 && h > 0 {
 		debugColors := []color.NRGBA{
 			{255, 0, 0, 255}, {0, 200, 0, 255}, {0, 0, 255, 255},
@@ -659,12 +771,38 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 	}
 
 	if elem.ElemType != TypeAvatar {
+		scrollY := float32(0)
+		isOverflow := false
+		if elem.ElemType == TypeBox {
+			totalH := float32(0)
+			for _, child := range elem.children {
+				totalH += child.GNode.LayoutOut().Height
+			}
+			viewH := float32(elem.GNode.LayoutOut().Height)
+			if totalH > viewH {
+				scrollY = elem.ScrollY()
+				elem.SetScrollMax(totalH - viewH)
+				isOverflow = true
+			}
+		}
 		var absoluteChildren []*Element
 		for _, child := range elem.children {
 			if child.GNode.GetPositionType() == goda.PositionTypeAbsolute {
 				absoluteChildren = append(absoluteChildren, child)
 			} else {
-				renderElement(screen, child, x, y, ctx)
+				childLo := child.GNode.LayoutOut()
+				cx := x + float32(childLo.Left)
+				cy := y + float32(childLo.Top) - scrollY
+				if isOverflow {
+					sub, ok := screen.SubImage(image.Rect(int(x), int(y), int(x+w), int(y+h))).(*ebiten.Image)
+					if ok {
+						renderElementAt(sub, child, cx, cy, ctx)
+					} else {
+						renderElementAt(screen, child, cx, cy, ctx)
+					}
+				} else {
+					renderElementAt(screen, child, cx, cy, ctx)
+				}
 			}
 		}
 		for _, child := range absoluteChildren {

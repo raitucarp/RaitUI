@@ -61,6 +61,8 @@ type Element struct {
 	_layoutCtx  *Context
 	_tooltipPlace int
 	_triggerRef  *Element
+	_scrollY     float32
+	_scrollMax   float32
 }
 
 func NewElement(typ ElementType) *Element {
@@ -657,6 +659,12 @@ func (e *Element) SetTrigger(ref *Element) *Element {
 }
 
 func (e *Element) TriggerRef() *Element { return e._triggerRef }
+
+func (e *Element) ScrollY() float32     { return e._scrollY }
+func (e *Element) SetScrollY(v float32) { e._scrollY = v; if e._scrollY < 0 { e._scrollY = 0 }; if e._scrollMax > 0 && e._scrollY > e._scrollMax { e._scrollY = e._scrollMax } }
+func (e *Element) ScrollMax() float32   { return e._scrollMax }
+func (e *Element) SetScrollMax(v float32) { e._scrollMax = v }
+func (e *Element) Scroll(dy float32)    { e.SetScrollY(e._scrollY + dy) }
 
 func (e *Element) Image(img any) *Element {
 	e.avatarImg = img
