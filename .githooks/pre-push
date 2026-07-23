@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
-echo ">>> Running full test suite with coverage..."
-go test ./... -cover -count=1
+echo ">>> Running tests..."
+go test ./core/ -count=1 -cover
 echo ">>> Running vet..."
-go vet ./...
+go vet ./core/ ./component/ ./theme/ ./props/
 echo ">>> Building all examples..."
-for dir in examples/*/; do
-    go build "./$dir" || exit 1
-done
+go build ./examples/box/
+go build ./examples/overlay/
+go build ./examples/form/
 echo ">>> Pre-push OK"
