@@ -1,29 +1,26 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 	"raitui/theme"
 )
 
 func Popper() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BackgroundColor(theme.White)
-	elem.BorderRadius(8)
-	elem.BoxShadow(0, 4, 12, 0, colorWithAlpha(theme.Black, 15))
-	elem.GNode.SetBorder(goda.EdgeAll, 1)
-	elem.BorderColor(theme.Gray200)
-	elem.GNode.SetFlexDirection(goda.FlexDirectionColumn)
-	elem.GNode.SetFlexShrink(0)
-	elem.GNode.SetMinWidth(200)
-	elem.GNode.SetPositionType(goda.PositionTypeAbsolute)
-	elem.GNode.SetPadding(goda.EdgeAll, 8)
-	return elem
+	return Box().
+		BackgroundColor(theme.White).
+		BorderRadius(8).
+		BoxShadow(0, 4, 12, 0, colorWithAlpha(theme.Black, 15)).
+		BorderWidth("1").
+		BorderColor(theme.Gray200).
+		FlexDirection(props.FlexDirectionColumn).
+		MinWidth("200").
+		Position(props.PositionAbsolute).
+		Padding("8")
 }
 
 func PopoverAt(target, pop *core.Element, placement core.Placement) *core.Element {
-	target.GNode.SetPositionType(goda.PositionTypeRelative)
+	target.Position(props.PositionRelative)
 	target.Children(pop)
 	pop.Visible(false)
 	pop.SetTrigger(target)
@@ -33,7 +30,7 @@ func PopoverAt(target, pop *core.Element, placement core.Placement) *core.Elemen
 }
 
 func WithPopper(target, pop *core.Element) *core.Element {
-	target.GNode.SetPositionType(goda.PositionTypeRelative)
+	target.Position(props.PositionRelative)
 	target.Children(pop)
 	pop.Visible(false)
 	pop.SetTrigger(target)

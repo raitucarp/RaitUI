@@ -6,11 +6,11 @@ import (
 )
 
 func Skeleton() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BackgroundColor(theme.Gray200)
-	elem.BorderRadius(4)
-	elem.GNode.SetWidth(200).SetMinWidth(60)
-	elem.GNode.SetHeight(16).SetMinHeight(16)
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return Box().
+		BackgroundColor(theme.Gray200).
+		BorderRadius(4).
+		Width("200").
+		MinWidth("60").
+		Height("16").
+		MinHeight("16")
 }

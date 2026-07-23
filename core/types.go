@@ -22,6 +22,7 @@ const (
 	TypeDialog
 	TypeMenu
 	TypeTooltip
+	TypeCanvas
 )
 
 type Edge int

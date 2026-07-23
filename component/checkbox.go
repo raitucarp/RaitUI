@@ -1,7 +1,9 @@
 package component
 
 import (
-		"raitui/core"
+	"strconv"
+
+	"raitui/core"
 )
 
 func Checkbox(label string, checked bool) *core.Element {
@@ -11,11 +13,11 @@ func Checkbox(label string, checked bool) *core.Element {
 
 	runes := len([]rune(label))
 	w := float32(runes)*9 + 40
-	h := float32(28)
+	wStr := strconv.FormatFloat(float64(w), 'f', 0, 32)
 
-	elem.GNode.SetWidth(w).SetMinWidth(w)
-	elem.GNode.SetHeight(h).SetMinHeight(h)
-	elem.GNode.SetFlexShrink(0)
+	elem.Width(wStr).MinWidth(wStr)
+	elem.Height("28").MinHeight("28")
+	elem.FlexShrink(0)
 
 	elem.OnClick(func() {
 		elem.SetChecked(!elem.IsChecked())

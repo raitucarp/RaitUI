@@ -1,14 +1,12 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
+	"raitui/props"
 )
 
 func Wrap() *core.Element {
-	elem := core.NewElement(core.TypeHStack)
-	elem.FlexDirection(goda.FlexDirectionRow)
-	elem.GNode.SetFlexWrap(goda.WrapWrap)
-	elem.GNode.SetAlignItems(goda.AlignFlexStart)
-	return elem
+	return Flex(props.FlexDirectionRow).
+		FlexWrap(props.WrapWrap).
+		AlignItems(props.AlignFlexStart)
 }

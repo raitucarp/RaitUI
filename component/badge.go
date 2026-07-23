@@ -1,7 +1,6 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
 	"raitui/theme"
 )
@@ -23,33 +22,23 @@ func BadgeOutline(label, colorScheme string) *core.Element {
 }
 
 func BadgeVariant(label, variant, colorScheme string) *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.GNode.SetFlexDirection(goda.FlexDirectionRow)
-	elem.GNode.SetJustifyContent(goda.JustifyCenter)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-
-	runes := len([]rune(label))
-	w := float32(runes)*8 + 14
-	h := float32(22)
-
-	elem.GNode.SetWidth(w).SetMinWidth(w)
-	elem.GNode.SetHeight(h).SetMinHeight(h)
-	elem.GNode.SetFlexShrink(0)
-
 	bg, txt, border := badgeColors(variant, colorScheme)
-	elem.BackgroundColor(bg)
-	elem.BorderRadius(4)
-
-	if variant == "outline" {
-		elem.BorderColor(border)
-		elem.GNode.SetBorder(goda.EdgeAll, 1)
-	}
 
 	t := Text(label)
 	t.TextColor(txt)
 	t.FontSize(11)
-	t.TextAlign(core.AlignCenter)
-	elem.Children(t)
+
+	elem := Center().
+		BackgroundColor(bg).
+		BorderRadius(4).
+		PaddingY("2").
+		PaddingX("7").
+		Children(t)
+
+	if variant == "outline" {
+		elem.BorderColor(border)
+		elem.BorderWidth("1")
+	}
 
 	return elem
 }

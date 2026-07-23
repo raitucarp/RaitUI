@@ -1,26 +1,20 @@
 package component
 
 import (
-		"raitui/core"
+	"raitui/core"
 	"raitui/theme"
 )
 
 func Avatar(name string) *core.Element {
-	size := float32(40)
-	elem := core.NewElement(core.TypeAvatar)
-	elem.BackgroundColor(theme.Blue500)
-	elem.BorderRadius(size / 2)
-	elem.GNode.SetWidth(size).SetMinWidth(size)
-	elem.GNode.SetHeight(size).SetMinHeight(size)
-	elem.GNode.SetFlexShrink(0)
-
 	initials := avatarInitials(name)
-	t := Text(initials)
-	t.TextColor(theme.White)
-	t.FontSize(float32(size) * 0.38)
-	elem.Children(t)
+	t := Text(initials).TextColor(theme.White).FontSize(15)
 
-	return elem
+	return Center().
+		Width("40").Height("40").
+		MinWidth("40").MinHeight("40").
+		BackgroundColor(theme.Blue500).
+		BorderRadius(20).
+		Children(t)
 }
 
 func avatarInitials(name string) string {

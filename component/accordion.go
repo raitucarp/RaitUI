@@ -1,58 +1,43 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
 	"raitui/theme"
 )
 
 func Accordion() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.Gap("1")
-	return elem
+	return VStack().
+		Gap("1")
 }
 
 func AccordionItem() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.GNode.SetBorder(goda.EdgeAll, 1)
-	elem.BorderColor(theme.Gray200)
-	elem.BorderRadius(8)
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return VStack().
+		BorderWidth("1").
+		BorderColor(theme.Gray200).
+		BorderRadius(8)
 }
 
 func AccordionHeader(label string) *core.Element {
-	elem := core.NewElement(core.TypeHStack)
-	elem.FlexDirection(goda.FlexDirectionRow)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-	elem.GNode.SetFlexShrink(0)
-	elem.Padding("12").PaddingX("16")
+	t := Text(label).FontSize(15).TextColor(theme.Gray700)
 
-	t := Text(label)
-	t.FontSize(15)
-	t.TextColor(theme.Gray700)
-	t.GNode.SetFlexShrink(0)
-	elem.Children(t)
+	header := HStack().
+		Padding("12").PaddingX("16").
+		Children(t)
 
-	elem.OnHover(func(entered bool) {
+	header.OnHover(func(entered bool) {
 		if entered {
-			elem.BackgroundColor(theme.Gray100)
+			header.BackgroundColor(theme.Gray100)
 		} else {
-			elem.BackgroundColor(theme.Transparent)
+			header.BackgroundColor(theme.Transparent)
 		}
 	})
 
-	return elem
+	return header
 }
 
 func AccordionPanel() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.Padding("12").PaddingX("16")
-	elem.Gap("8")
-	elem.Visible(false)
-	return elem
+	return VStack().
+		Padding("12").PaddingX("16").
+		Gap("8").
+		Visible(false)
 }

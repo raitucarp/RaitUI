@@ -1,39 +1,32 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
 	"raitui/theme"
 )
 
 func RadioGroup() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.Gap("8")
-	return elem
+	return VStack().
+		Gap("8")
 }
 
 func Radio(label string) *core.Element {
-	elem := core.NewElement(core.TypeHStack)
-	elem.FlexDirection(goda.FlexDirectionRow)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-	elem.Gap("8")
-	elem.GNode.SetFlexShrink(0)
+	elem := HStack().
+		Gap("8")
 
-	dot := core.NewElement(core.TypeBox)
-	dot.BorderColor(theme.Gray300)
-	dot.GNode.SetBorder(goda.EdgeAll, 2)
-	dot.GNode.SetWidth(18).SetMinWidth(18)
-	dot.GNode.SetHeight(18).SetMinHeight(18)
-	dot.BorderRadius(9)
-	dot.GNode.SetFlexShrink(0)
+	dot := Box().
+		BorderColor(theme.Gray300).
+		BorderWidth("2").
+		Width("18").MinWidth("18").
+		Height("18").MinHeight("18").
+		BorderRadius(9)
 
-	inner := core.NewElement(core.TypeBox)
-	inner.BackgroundColor(theme.Blue500)
-	inner.GNode.SetWidth(8).SetMinWidth(8)
-	inner.GNode.SetHeight(8).SetMinHeight(8)
-	inner.BorderRadius(4)
-	inner.Visible(false)
+	inner := Box().
+		BackgroundColor(theme.Blue500).
+		Width("8").MinWidth("8").
+		Height("8").MinHeight("8").
+		BorderRadius(4).
+		Visible(false)
 
 	dot.Children(inner)
 	elem.Children(dot, Text(label).FontSize(14).TextColor(theme.Gray700))

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	goda "goda"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Element struct {
@@ -63,6 +64,16 @@ type Element struct {
 	_triggerRef  *Element
 	_scrollY     float32
 	_scrollMax   float32
+	drawFunc     func(ctx CanvasContext)
+}
+
+type CanvasContext struct {
+	Screen *ebiten.Image
+	X      float32
+	Y      float32
+	W      float32
+	H      float32
+	Frame  int
 }
 
 func NewElement(typ ElementType) *Element {
@@ -652,6 +663,13 @@ func (e *Element) TextBind() func() string { return e.textBind }
 
 func (e *Element) ProgressValue() float32 { return e._progress }
 func (e *Element) SetProgressValue(v float32) { e._progress = v }
+
+func (e *Element) SetDrawFunc(fn func(CanvasContext)) *Element {
+	e.drawFunc = fn
+	return e
+}
+
+func (e *Element) DrawFunc() func(CanvasContext) { return e.drawFunc }
 
 func (e *Element) SetTrigger(ref *Element) *Element {
 	e._triggerRef = ref

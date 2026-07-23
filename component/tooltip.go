@@ -1,38 +1,23 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 	"raitui/theme"
 )
 
 func Tooltip(label string) *core.Element {
-	elem := core.NewElement(core.TypeBox)
+	elem := core.NewElement(core.TypeTooltip)
 	elem.BackgroundColor(theme.Gray700)
 	elem.BorderRadius(6)
-	elem.GNode.SetFlexShrink(0)
-	elem.GNode.SetPositionType(goda.PositionTypeAbsolute)
-	elem.GNode.SetPadding(goda.EdgeAll, 5)
+	elem.FlexShrink(0)
+	elem.Position(props.PositionAbsolute)
+	elem.Padding("5")
+	elem.FlexDirection(props.FlexDirectionRow)
+	elem.JustifyContent(props.JustifyFlexStart)
+	elem.AlignItems(props.AlignCenter)
 
-	elem.GNode.SetFlexDirection(goda.FlexDirectionRow)
-	elem.GNode.SetJustifyContent(goda.JustifyFlexStart)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-
-	t := core.NewElement(core.TypeText)
-	t.SetTextContent(label)
-	t.TextColor(theme.White)
-	t.FontSize(12)
-	t.GNode.SetHeight(16).SetMinHeight(16)
-
-	width := float32(len([]rune(label))) * 7
-	if width < 16 {
-		width = 16
-	}
-	t.GNode.SetMeasureFunc(func(node *goda.Node, w float32, wm goda.MeasureMode, h float32, hm goda.MeasureMode) goda.Size {
-		return goda.Size{Width: width, Height: 16}
-	})
-
+	t := Text(label).TextColor(theme.White).FontSize(12)
 	elem.Children(t)
 
 	return elem
@@ -43,7 +28,7 @@ func TooltipPlacement(e *core.Element, p core.Placement) *core.Element {
 }
 
 func WithTooltip(target, tooltip *core.Element) *core.Element {
-	target.GNode.SetPositionType(goda.PositionTypeRelative)
+	target.Position(props.PositionRelative)
 	target.Children(tooltip)
 	tooltip.Visible(false)
 	tooltip.SetTrigger(target)

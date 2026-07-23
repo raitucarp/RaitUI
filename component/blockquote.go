@@ -1,19 +1,18 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
 	"raitui/theme"
 )
 
 func Blockquote(content ...string) *core.Element {
-	box := core.NewElement(core.TypeBox)
-	box.BackgroundColor(theme.Gray50)
-	box.BorderColor(theme.Blue500)
-	box.GNode.SetBorder(goda.EdgeLeft, 3)
-	box.Padding("12").PaddingLeft("16")
-	box.BorderRadius(4)
-	box.GNode.SetFlexShrink(0)
+	box := Box().
+		BackgroundColor(theme.Gray50).
+		BorderColor(theme.Blue500).
+		BorderLeft("3").
+		Padding("12").
+		PaddingLeft("16").
+		BorderRadius(4)
 
 	var children []*core.Element
 	for _, line := range content {
@@ -29,4 +28,10 @@ func Blockquote(content ...string) *core.Element {
 	box.Children(vst)
 
 	return box
+}
+
+func BlockquoteCaption(cite string) *core.Element {
+	return Text("\u2014 " + cite).
+		TextColor(theme.Gray500).
+		FontSize(13)
 }

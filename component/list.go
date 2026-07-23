@@ -1,7 +1,7 @@
 package component
 
 import (
-		"raitui/core"
+	"raitui/core"
 	"raitui/theme"
 )
 
@@ -24,6 +24,12 @@ func List(items []string, ordered bool) *core.Element {
 	}
 
 	return vst
+}
+
+func ListItem(content string) *core.Element {
+	return Text(content).
+		TextColor(theme.Gray700).
+		FontSize(14)
 }
 
 func itoa(n int) string {

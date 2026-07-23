@@ -1,7 +1,9 @@
 package component
 
 import (
-		"raitui/core"
+	"strconv"
+
+	"raitui/core"
 )
 
 func Text(content string) *core.Element {
@@ -16,11 +18,14 @@ func Text(content string) *core.Element {
 		w = 22
 	}
 
-	elem.GNode.SetWidth(w)
-	elem.GNode.SetMinWidth(w)
-	elem.GNode.SetHeight(h)
-	elem.GNode.SetMinHeight(h)
-	elem.GNode.SetFlexShrink(0)
+	wStr := strconv.FormatFloat(float64(w), 'f', 0, 32)
+	hStr := strconv.FormatFloat(float64(h), 'f', 0, 32)
+
+	elem.Width(wStr)
+	elem.MinWidth(wStr)
+	elem.Height(hStr)
+	elem.MinHeight(hStr)
+	elem.FlexShrink(0)
 
 	return elem
 }

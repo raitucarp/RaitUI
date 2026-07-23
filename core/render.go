@@ -741,3 +741,17 @@ func textLen(str string, face font.Face) float32 {
 }
 
 func screen(rctx *RenderCtx) *ebiten.Image { return rctx.Screen }
+
+func renderCanvas(rctx *RenderCtx, elem *Element) {
+	if elem.drawFunc == nil {
+		return
+	}
+	elem.drawFunc(CanvasContext{
+		Screen: rctx.Screen,
+		X:      rctx.X,
+		Y:      rctx.Y,
+		W:      rctx.W,
+		H:      rctx.H,
+		Frame:  rctx.Frame,
+	})
+}

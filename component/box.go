@@ -6,6 +6,6 @@ import (
 
 func Box() *core.Element {
 	elem := core.NewElement(core.TypeBox)
-	elem.GNode.SetFlexShrink(0)
+	elem.FlexShrink(0)
 	return elem
 }

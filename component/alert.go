@@ -1,18 +1,15 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
 	"raitui/theme"
 )
 
 func Alert(status string) *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BorderRadius(6)
-	elem.GNode.SetFlexDirection(goda.FlexDirectionColumn)
-	elem.GNode.SetFlexShrink(0)
-	elem.GNode.SetBorder(goda.EdgeLeft, 3)
-	elem.Padding("12")
+	elem := VStack().
+		BorderRadius(6).
+		BorderLeft("3").
+		Padding("12")
 
 	switch status {
 	case "success":
@@ -30,4 +27,12 @@ func Alert(status string) *core.Element {
 	}
 
 	return elem
+}
+
+func AlertTitle(title string) *core.Element {
+	return Text(title).FontSize(14).TextColor(theme.Gray900)
+}
+
+func AlertDescription(desc string) *core.Element {
+	return Text(desc).FontSize(13).TextColor(theme.Gray600)
 }

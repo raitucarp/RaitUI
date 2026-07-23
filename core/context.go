@@ -622,6 +622,8 @@ func renderElementAt(screen *ebiten.Image, elem *Element, absX, absY float32, ct
 		renderAvatar(rctx, elem)
 	case TypeMenu, TypeDialog, TypeTooltip:
 		renderStack(rctx, elem)
+	case TypeCanvas:
+		renderCanvas(rctx, elem)
 	}
 
 	if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll && elem.GNode.GetOverflow() == goda.OverflowScroll {
@@ -713,6 +715,8 @@ func renderElement(screen *ebiten.Image, elem *Element, absLeft, absTop float32,
 		renderAvatar(rctx, elem)
 	case TypeMenu, TypeDialog, TypeTooltip:
 		renderStack(rctx, elem)
+	case TypeCanvas:
+		renderCanvas(rctx, elem)
 	}
 
 	if elem.ElemType == TypeBox && elem.GNode.GetOverflow() == goda.OverflowScroll && elem.GNode.GetOverflow() == goda.OverflowScroll {

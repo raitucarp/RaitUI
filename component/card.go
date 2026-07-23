@@ -1,18 +1,33 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
 	"raitui/theme"
 )
 
 func Card() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BackgroundColor(theme.White)
-	elem.BorderRadius(10)
-	elem.BorderColor(theme.Gray200)
-	elem.BoxShadow(0, 1, 4, 0, colorWithAlpha(theme.Black, 10))
-	elem.GNode.SetBorder(goda.EdgeAll, 1)
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return VStack().
+		BackgroundColor(theme.White).
+		BorderRadius(10).
+		BorderColor(theme.Gray200).
+		BoxShadow(0, 1, 4, 0, colorWithAlpha(theme.Black, 10)).
+		BorderWidth("1")
+}
+
+func CardHeader() *core.Element {
+	return Box().
+		Padding("16").
+		PaddingBottom("0")
+}
+
+func CardBody() *core.Element {
+	return Box().
+		Padding("16")
+}
+
+func CardFooter() *core.Element {
+	return HStack().
+		Padding("16").
+		PaddingTop("0").
+		Gap("12")
 }

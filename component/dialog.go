@@ -1,9 +1,8 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 	"raitui/theme"
 )
 
@@ -16,35 +15,19 @@ type dialogRoot struct {
 }
 
 func DialogRoot() *dialogRoot {
-	backdrop := core.NewElement(core.TypeBox)
+	backdrop := core.NewElement(core.TypeDialog)
 	backdrop.BackgroundColor(colorWithAlpha(theme.Black, 60))
 	backdrop.Width("100%").Height("100%")
-	backdrop.GNode.SetFlexDirection(goda.FlexDirectionColumn)
-	backdrop.GNode.SetJustifyContent(goda.JustifyCenter)
-	backdrop.GNode.SetAlignItems(goda.AlignCenter)
-	backdrop.GNode.SetFlexShrink(0)
+	backdrop.FlexDirection(props.FlexDirectionColumn)
+	backdrop.JustifyContent(props.JustifyCenter)
+	backdrop.AlignItems(props.AlignCenter)
+	backdrop.FlexShrink(0)
 	backdrop.Visible(false)
 
-	card := core.NewElement(core.TypeBox)
-	card.BackgroundColor(theme.White)
-	card.BorderRadius(12)
-	card.Padding("24").Gap("16")
-	card.GNode.SetMinWidth(400)
-	card.GNode.SetFlexDirection(goda.FlexDirectionColumn)
-	card.GNode.SetFlexShrink(0)
-
-	header := core.NewElement(core.TypeBox)
-	header.GNode.SetFlexShrink(0)
-
-	body := core.NewElement(core.TypeVStack)
-	body.FlexDirection(goda.FlexDirectionColumn)
-	body.GNode.SetFlexGrow(1).SetFlexShrink(1)
-	body.Gap("12")
-
-	footer := core.NewElement(core.TypeHStack)
-	footer.FlexDirection(goda.FlexDirectionRow)
-	footer.Gap("8")
-	footer.GNode.SetFlexShrink(0)
+	card := Card().Padding("24").Gap("16")
+	header := Box()
+	body := VStack().FlexGrow(1).FlexShrink(1).Gap("12")
+	footer := HStack().Gap("8")
 
 	card.AppendChild(header)
 	card.AppendChild(body)
@@ -61,10 +44,7 @@ func DialogRoot() *dialogRoot {
 }
 
 func (d *dialogRoot) Title(label string) *dialogRoot {
-	t := Text(label)
-	t.FontSize(18)
-	t.TextColor(theme.Gray800)
-	t.GNode.SetFlexShrink(0)
+	t := Text(label).FontSize(18).TextColor(theme.Gray800)
 	d.header.Children(t)
 	return d
 }

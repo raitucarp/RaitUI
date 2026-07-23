@@ -1,15 +1,12 @@
 package component
 
 import (
-	goda "goda"
 	"raitui/core"
+	"raitui/props"
 )
 
 func Center() *core.Element {
-	elem := core.NewElement(core.TypeCenter)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.GNode.SetJustifyContent(goda.JustifyCenter)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return Flex(props.FlexDirectionColumn).
+		JustifyContent(props.JustifyCenter).
+		AlignItems(props.AlignCenter)
 }

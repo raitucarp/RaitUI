@@ -1,13 +1,13 @@
 package component
 
 import (
-		"raitui/core"
+	"raitui/core"
+	"raitui/theme"
 )
 
 func Separator() *core.Element {
-	elem := core.NewElement(core.TypeSeparator)
-	elem.GNode.SetWidth(100)
-	elem.GNode.SetHeight(1)
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return Box().
+		Width("100").
+		Height("1").
+		BackgroundColor(theme.Gray200)
 }

@@ -8,7 +8,7 @@ import (
 func Flex(dir goda.FlexDirection) *core.Element {
 	elem := core.NewElement(core.TypeFlex)
 	elem.FlexDirection(dir)
-	elem.GNode.SetAlignItems(goda.AlignFlexStart)
-	elem.GNode.SetFlexShrink(0)
+	elem.AlignItems(goda.AlignFlexStart)
+	elem.FlexShrink(0)
 	return elem
 }

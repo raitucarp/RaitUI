@@ -6,11 +6,12 @@ import (
 )
 
 func Status(variant string) *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BorderRadius(9999)
-	elem.GNode.SetWidth(10).SetMinWidth(10)
-	elem.GNode.SetHeight(10).SetMinHeight(10)
-	elem.GNode.SetFlexShrink(0)
+	elem := Box().
+		BorderRadius(9999).
+		Width("10").
+		MinWidth("10").
+		Height("10").
+		MinHeight("10")
 
 	switch variant {
 	case "success":

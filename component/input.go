@@ -1,25 +1,25 @@
 package component
 
 import (
-		"raitui/core"
+	"raitui/core"
 )
 
 func Input(placeholder string) *core.Element {
 	elem := core.NewElement(core.TypeInput)
 	elem.SetPlaceholder(placeholder)
-	elem.GNode.SetWidth(200)
-	elem.GNode.SetMinHeight(36)
-	elem.GNode.SetHeight(36)
-	elem.GNode.SetFlexShrink(0)
+	elem.Width("200")
+	elem.MinHeight("36")
+	elem.Height("36")
+	elem.FlexShrink(0)
 	return elem
 }
 
 func TextArea(placeholder string) *core.Element {
 	elem := core.NewElement(core.TypeInput)
 	elem.SetPlaceholder(placeholder)
-	elem.GNode.SetWidth(300)
-	elem.GNode.SetMinHeight(80)
-	elem.GNode.SetHeight(80)
-	elem.GNode.SetFlexShrink(0)
+	elem.Width("300")
+	elem.MinHeight("80")
+	elem.Height("80")
+	elem.FlexShrink(0)
 	return elem
 }

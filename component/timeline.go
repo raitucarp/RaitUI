@@ -1,46 +1,38 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 	"raitui/theme"
 )
 
 func Timeline() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.Gap("0")
-	return elem
+	return VStack().
+		Gap("0")
 }
 
 func TimelineItem() *core.Element {
-	elem := core.NewElement(core.TypeHStack)
-	elem.FlexDirection(goda.FlexDirectionRow)
-	elem.Gap("12")
-	elem.GNode.SetFlexShrink(0)
-	return elem
+	return HStack().
+		Gap("12")
 }
 
 func TimelineDot() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.BackgroundColor(theme.Blue500)
-	elem.BorderRadius(9999)
-	elem.GNode.SetWidth(16).SetMinWidth(16)
-	elem.GNode.SetHeight(16).SetMinHeight(16)
-	elem.GNode.SetFlexShrink(0)
-	elem.GNode.SetAlignSelf(goda.AlignCenter)
-	return elem
+	return Box().
+		BackgroundColor(theme.Blue500).
+		BorderRadius(9999).
+		Width("16").MinWidth("16").
+		Height("16").MinHeight("16").
+		FlexShrink(0).
+		AlignSelf(props.AlignCenter)
 }
 
 func TimelineContent() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	elem.PaddingY("4").PaddingBottom("24")
-	elem.Gap("4")
-	elem.FlexGrow(1)
-	elem.GNode.SetBorder(goda.EdgeLeft, 2)
-	elem.BorderColor(theme.Gray200)
-	elem.PaddingLeft("16")
-	return elem
+	return VStack().
+		PaddingY("4").
+		PaddingBottom("24").
+		PaddingLeft("16").
+		Gap("4").
+		FlexGrow(1).
+		BorderLeft("2").
+		BorderColor(theme.Gray200)
 }

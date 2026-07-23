@@ -1,9 +1,8 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 	"raitui/theme"
 )
 
@@ -33,11 +32,10 @@ func (w *WindowConfig) MinSize(w2, h int) *WindowConfig { w.minW = w2; w.minH = 
 func (w *WindowConfig) Theme(bg theme.Color) *WindowConfig { w.bgColor = bg; return w }
 
 func (w *WindowConfig) Children(children ...*core.Element) *WindowConfig {
-	w.root = core.NewElement(core.TypeVStack)
-	w.root.FlexDirection(goda.FlexDirectionColumn)
-	w.root.GNode.SetAlignItems(goda.AlignStretch)
-	w.root.Width("100%").Height("100%")
-	w.root.BackgroundColor(w.bgColor)
+	w.root = VStack().
+		AlignItems(props.AlignStretch).
+		Width("100%").Height("100%").
+		BackgroundColor(w.bgColor)
 	for _, c := range children {
 		w.root.AppendChild(c)
 	}
@@ -56,17 +54,10 @@ func (w *WindowConfig) Run() {
 func (w *WindowConfig) Ctx() *core.Context { return w.ctx }
 
 func App() *core.Element {
-	elem := core.NewElement(core.TypeVStack)
-	elem.FlexDirection(goda.FlexDirectionColumn)
-	return elem
+	return VStack()
 }
 
 func Portals() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.GNode.SetPositionType(goda.PositionTypeAbsolute)
-	elem.GNode.SetFlexDirection(goda.FlexDirectionColumn)
-	elem.GNode.SetJustifyContent(goda.JustifyCenter)
-	elem.GNode.SetAlignItems(goda.AlignCenter)
-	elem.Width("100%").Height("100%")
-	return elem
+	return Center().
+		Width("100%").Height("100%")
 }

@@ -1,16 +1,14 @@
 package component
 
 import (
-	goda "goda"
-
 	"raitui/core"
+	"raitui/props"
 )
 
 func Portal() *core.Element {
-	elem := core.NewElement(core.TypeBox)
-	elem.GNode.SetPositionType(goda.PositionTypeAbsolute)
-	elem.Width("100%").Height("100%")
-	return elem
+	return Box().
+		Position(props.PositionAbsolute).
+		Width("100%").Height("100%")
 }
 
 func OpenPortal(ctx *core.Context, portal *core.Element) {
